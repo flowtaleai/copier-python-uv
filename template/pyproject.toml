@@ -15,7 +15,7 @@ typer = "^0.13.0"
 {% endif %}
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.4.2"
+pytest = "^8.4.0"
 ruff = "^0.9.7"
 {% if testing_framework == "pytest" %}
 pytest-mock = "^3.11.1"

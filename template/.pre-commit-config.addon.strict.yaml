@@ -11,25 +11,25 @@
         language: system
         entry: poetry run black --preview
         require_serial: true
-        types_or: [ python, pyi ]
+        types_or: [python, pyi]
       - id: ruff-lint
         name: Lint files with ruff
         entry: poetry run ruff check
         language: system
         require_serial: true
-        types_or: [ python, pyi, jupyter ]
+        types_or: [python, pyi, jupyter]
         args:
           - --fix
           - --show-fixes
           - --force-exclude
-{ % if type_checker == "mypy" % }
+{% if type_checker == "mypy" %}
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.2
     hooks:
       - id: mypy
         name: mypy
         entry: poetry run mypy
-        args: [ "." ]
+        args: ["."]
         language: system
         pass_filenames: false
-{ % endif % }
+{% endif %}
