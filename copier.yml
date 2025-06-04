@@ -90,7 +90,7 @@ python_version:
     - "3.11"
     - "3.12"
     - "3.13"
-  default: "3.10"
+  default: "3.12"
   help: "Python version to use"
 
 poetry_version:
