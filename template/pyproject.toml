@@ -36,6 +36,9 @@ mkdocs-literate-nav = "^0.6.1"
 {% if generate_docs == "pdoc" %}
 pdoc = "^14.6"
 {% endif %}
+{% if lint_dockerfile %}
+hadolint-bin = "^2.12.0"
+{% endif %}
 {% if use_jupyter_notebooks %}
 ipykernel = "^6.29.4"
 nbdime = "^4.0.1"
