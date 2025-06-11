@@ -527,15 +527,27 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
 
 def test_with_hadolint(tmp_path, copier):
     custom_answers = {
+        "generate_dockerfile": True,
         "lint_dockerfile": True,
     }
     project = copier.copy(tmp_path, **custom_answers)
+
+    project.run("git init")
+    project.run("git add .")
+    project.run("git config user.name 'User Name'")
+    project.run("git config user.email 'user@email.org'")
+    project.run("git commit -m init")
+
+    project.run("make setup")
 
     pre_commit_path = project.path / ".pre-commit-config.standard.yaml"
     pyproject_path = project.path / "pyproject.toml"
 
     assert "hadolint" in pre_commit_path.read_text()
     assert "hadolint" in pyproject_path.read_text()
+
+    project.run("poetry install")
+    project.run("poetry run pre-commit run hadolint --all-files")
 
 
 def test_without_hadolint(tmp_path, copier):
