@@ -49,18 +49,21 @@ ARG PYTHON_REGISTRY_PASSWORD
 # and not used in the final image, it should be safe.
 # This approach avoids the added complexity of using Docker secrets.
 
+# DL3008 is ok to ignore because `apt-get update` runs in the same RUN command,
+# and apt cache will not be stale, so outdated packages will not be installed.
+# hadolint ignore=DL3008
 RUN apt-get update \
-    && apt-get install -y curl git build-essential
+    && apt-get install -y --no-install-recommends curl git build-essential
 
 # Configure Poetry to use the application's virtual environment
-RUN $POETRY_HOME/bin/poetry config virtualenvs.create $POETRY_VIRTUALENVS_CREATE \
-    && $POETRY_HOME/bin/poetry config virtualenvs.path $VIRTUAL_ENV \
-    && $POETRY_HOME/bin/poetry config cache-dir /root/.cache/pypoetry
+RUN "$POETRY_HOME/bin/poetry" config virtualenvs.create "$POETRY_VIRTUALENVS_CREATE" \
+    && "$POETRY_HOME/bin/poetry" config virtualenvs.path "$VIRTUAL_ENV" \
+    && "$POETRY_HOME/bin/poetry" config cache-dir /root/.cache/pypoetry
 
 # Setup environment for HTTPS auth based on the arguments
 RUN if [ -n "$PYTHON_REGISTRY_NAME" ] && [ -n "$PYTHON_REGISTRY_USERNAME" ] && [ -n "$PYTHON_REGISTRY_PASSWORD" ]; then \
         echo "Using provided registry credentials for $PYTHON_REGISTRY_NAME"; \
-        $POETRY_HOME/bin/poetry config http-basic.$PYTHON_REGISTRY_NAME $PYTHON_REGISTRY_USERNAME $PYTHON_REGISTRY_PASSWORD; \
+        "$POETRY_HOME/bin/poetry" config "http-basic.$PYTHON_REGISTRY_NAME" "$PYTHON_REGISTRY_USERNAME" "$PYTHON_REGISTRY_PASSWORD"; \
     else \
         echo "Registry credentials or name not provided, skipping authentication setup"; \
     fi
@@ -68,7 +71,7 @@ RUN if [ -n "$PYTHON_REGISTRY_NAME" ] && [ -n "$PYTHON_REGISTRY_USERNAME" ] && [
 # Copy and install dependencies
 COPY poetry.lock pyproject.toml ./
 RUN --mount=type=cache,target=/root/.cache \
-    $POETRY_HOME/bin/poetry install --no-interaction  --no-root --only main
+    "$POETRY_HOME/bin/poetry" install --no-interaction  --no-root --only main
 
 FROM python-base AS production
 
@@ -88,7 +91,7 @@ COPY ./src ./src
 
 # Install the project
 RUN --mount=type=cache,target=/root/.cache \
-    $POETRY_HOME/bin/poetry install --no-interaction --only-root
+    "$POETRY_HOME/bin/poetry" install --no-interaction --only-root
 
 # chmod +x for entrypoint script
 RUN chmod +x scripts/entrypoint.sh
