@@ -1,3 +1,3 @@
 #!/bin/bash
 
-poetry run {{ package_name.split('.')[-1] }} "$@"
+uv run {{ package_name.split('.')[-1] }} "$@"
