@@ -1,6 +1,6 @@
-# Copier Python Poetry
+# Copier Python uv
 
-Opinionated copier template for python projects using poetry
+Opinionated copier template for python projects using uv
 
 ## Features
 
@@ -67,7 +67,7 @@ Strict checks:
 1. Create a new project based on this copier template (it can also be applied to existing projects)
 
    ```bash
-   copier copy https://github.com/flowtaleai/copier-python-poetry.git project-folder
+   copier copy https://github.com/flowtaleai/copier-python-uv.git project-folder
    ```
 
    The template version used corresponds to the most recent tag of the template repository.
@@ -83,7 +83,7 @@ Strict checks:
    git commit -m "Initial commit"
    ```
 
-4. Generate the poetry lock file
+4. Generate the uv lock file
 
    ```bash
    make setup-strict
@@ -92,8 +92,8 @@ Strict checks:
 5. Commit the lock file
 
    ```bash
-   git add poetry.lock
-   git commit -m "Poetry lock file regenerated"
+   git add uv.lock
+   git commit -m "uv lock file regenerated"
    ```
 
    (Opinion) It is always better to commit the lock file by itself given that reverting a commit with an update to the lock file is complicated.
@@ -112,8 +112,8 @@ Strict checks:
 
    Do not provide the `--skip-answered` flag if you want to change some of the original answers.
 
-2. Run `poetry lock` to regenerate the poetry lock file given that the `pyproject.toml` may have been updated
-3. Run `poetry install`  to update the project dependencies
+2. Run `uv lock` to regenerate the uv lock file given that the `pyproject.toml` may have been updated
+3. Run `uv sync`  to update the project dependencies
 
 ### Copier parameters
 
