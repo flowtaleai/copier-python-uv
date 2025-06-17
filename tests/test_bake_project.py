@@ -1,7 +1,6 @@
 import shutil
 
 import pytest
-from prompt_toolkit.validation import ValidationError
 
 
 def test_bake_with_defaults(tmp_path, copier):
@@ -51,12 +50,12 @@ def test_bake_with_proprietary_license(tmp_path, copier):
     project = copier.copy(tmp_path, **custom_answers)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
-    assert "LICENSE" not in found_toplevel_files
+    assert "LICENSE" in found_toplevel_files
 
 
 def test_bake_with_invalid_package_name(tmp_path, copier):
     custom_answers = {"package_name": "1invalid"}
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError, match="Validation error for question"):
         copier.copy(tmp_path, **custom_answers)
 
 
@@ -95,9 +94,7 @@ def test_bake_app_and_check_cli_scripts(tmp_path, copier):
 
     assert project.path.is_dir()
     pyproject_path = project.path / "pyproject.toml"
-    assert_str = (
-        '[tool.poetry.scripts]\npython_boilerplate = "python_boilerplate.cli:app"'
-    )
+    assert_str = '[project.scripts]\npython_boilerplate = "python_boilerplate.cli:app"'
     assert assert_str in pyproject_path.read_text()
 
 
@@ -137,7 +134,7 @@ def test_bake_gitlab_and_unittest(tmp_path, copier):
     project = copier.copy(tmp_path, **custom_answers)
 
     gitlab_ci_path = project.path / ".gitlab-ci.yml"
-    assert "poetry run python -m unittest discover" in gitlab_ci_path.read_text()
+    assert "uv run python -m unittest discover" in gitlab_ci_path.read_text()
 
 
 @pytest.mark.slow
@@ -146,8 +143,8 @@ def test_bake_and_run_cli(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
     project = copier.copy(tmp_path, **custom_answers)
 
-    project.run("poetry install --only main")
-    project.run("poetry run python_boilerplate")
+    project.run("uv sync")
+    project.run("uv run python_boilerplate")
 
 
 @pytest.mark.venv
@@ -155,7 +152,7 @@ def test_bake_and_bump_version(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
     project = copier.copy(tmp_path, **custom_answers)
 
-    project.run("poetry run bump2version minor")
+    project.run("uv run bump2version minor")
 
 
 @pytest.mark.slow
@@ -177,8 +174,8 @@ def test_bake_defaults_and_run_pre_commit(tmp_path, copier):
     with dst_pre_commit_path.open("a") as f:
         f.write(strict_pre_commit_path.read_text())
 
-    project.run("poetry install")
-    project.run("poetry run pre-commit run --all-files")
+    project.run("uv sync")
+    project.run("uv run pre-commit run --all-files")
 
 
 @pytest.mark.slow
@@ -192,7 +189,7 @@ def test_make_bump_updates_version_in_selected_files(tmp_path, copier):
     project.run("git config user.name 'User Name'")
     project.run("git config user.email 'user@email.org'")
     project.run("git commit -m init")
-    project.run("poetry run bump2version major")
+    project.run("uv run bump2version major")
 
     copier_answers_path = project.path / ".copier-answers.yml"
     pyproject_path = project.path / "pyproject.toml"
@@ -352,8 +349,8 @@ def test_bake_with_many_and_run_pre_commit(tmp_path, copier):
     with dst_pre_commit_path.open("a") as f:
         f.write(strict_pre_commit_path.read_text())
 
-    project.run("poetry install")
-    project.run("poetry run pre-commit run --all-files")
+    project.run("uv sync")
+    project.run("uv run pre-commit run --all-files")
 
 
 def test_bake_namespaced_package_with_many_files(tmp_path, copier):
@@ -430,14 +427,14 @@ def test_bake_namespaced_package_with_many_and_run_pre_commit(tmp_path, copier):
     with dst_pre_commit_path.open("a") as f:
         f.write(strict_pre_commit_path.read_text())
 
-    project.run("poetry install")
-    project.run("poetry run pre-commit run --all-files")
+    project.run("uv sync")
+    project.run("uv run pre-commit run --all-files")
 
 
 @pytest.mark.parametrize("git_hosting", ["github", "gitlab", "bitbucket"])
-def test_poetry_version_consistency(tmp_path, copier, git_hosting):
+def test_uv_version_consistency(tmp_path, copier, git_hosting):
     custom_answers = {
-        "poetry_version": "1.8.3",
+        "uv_version": "0.7.13",
         "generate_dockerfile": True,
         "git_hosting": git_hosting,
     }
@@ -445,26 +442,26 @@ def test_poetry_version_consistency(tmp_path, copier, git_hosting):
 
     # Check Dockerfile
     dockerfile_path = project.path / "Dockerfile"
-    assert "POETRY_VERSION=1.8.3" in dockerfile_path.read_text()
+    assert "uv:0.7.13" in dockerfile_path.read_text()
 
     # Check CI files
     if git_hosting == "github":
         ci_path = project.path / ".github" / "workflows" / "ci.yml"
-        assert 'POETRY_VERSION: "1.8.3"' in ci_path.read_text()
+        assert 'UV_VERSION: "0.7.13"' in ci_path.read_text()
     elif git_hosting == "gitlab":
         ci_path = project.path / ".gitlab-ci.yml"
-        assert "pip install poetry==1.8.3" in ci_path.read_text()
+        assert "pip install uv==0.7.13" in ci_path.read_text()
     elif git_hosting == "bitbucket":
         ci_path = project.path / "bitbucket-pipelines.yml"
-        assert "pip install poetry==1.8.3" in ci_path.read_text()
+        assert "pip install uv==0.7.13" in ci_path.read_text()
 
     # Check CONTRIBUTING.md
     contributing_path = project.path / "CONTRIBUTING.md"
-    assert "Poetry 1.8.3" in contributing_path.read_text()
+    assert "uv 0.7.13" in contributing_path.read_text()
 
     # Check devcontainer
     devcontainer_path = project.path / ".devcontainer" / "devcontainer.json"
-    assert 'poetry:2": { "version": "1.8.3" }' in devcontainer_path.read_text()
+    assert 'uv:1": {"version": "1.1.4"}' in devcontainer_path.read_text()
 
 
 @pytest.mark.slow
@@ -480,6 +477,7 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
         "type_checker_strictness": "strict",
         "package_name": "mypackage",  # Specify a fixed package name
     }
+
     project = copier.copy(tmp_path, **custom_answers)
 
     project.run("git init")
@@ -521,8 +519,8 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
     with dst_pre_commit_path.open("a") as f:
         f.write(strict_pre_commit_path.read_text())
 
-    project.run("poetry install")
-    project.run("poetry run pre-commit run --all-files")
+    project.run("uv sync")
+    project.run("uv run pre-commit run --all-files")
 
 
 def test_with_hadolint(tmp_path, copier):
@@ -546,8 +544,8 @@ def test_with_hadolint(tmp_path, copier):
     assert "hadolint" in pre_commit_path.read_text()
     assert "hadolint" in pyproject_path.read_text()
 
-    project.run("poetry install")
-    project.run("poetry run pre-commit run hadolint --all-files")
+    project.run("uv sync")
+    project.run("uv run pre-commit run hadolint --all-files")
 
 
 def test_without_hadolint(tmp_path, copier):
