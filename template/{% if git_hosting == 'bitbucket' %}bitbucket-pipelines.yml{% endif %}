@@ -8,12 +8,12 @@ pipelines:
           caches:
             - pip
           script:
-            - pip install poetry=={{ poetry_version }}
-            - poetry install
-            - poetry run pytest
+            - pip install uv=={{ uv_version }}
+            - uv sync --no-install-project
+            - uv run pytest
       - step:
           name: Lint code
           script:
-            - pip install poetry
-            - poetry install
-            - poetry run pre-commit run --all-files
+            - pip install uv
+            - uv sync --no-install-project
+            - uv run pre-commit run --all-files
