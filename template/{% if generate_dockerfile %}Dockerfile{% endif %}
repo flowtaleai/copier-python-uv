@@ -7,34 +7,42 @@ FROM python:3.12-slim-bookworm AS base
 ############################
 # Set up the builder layer #
 ############################
-FROM base AS builder-base
+FROM base AS builder
 COPY --from=ghcr.io/astral-sh/uv:{{ uv_version }} /uv /bin/uv
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 WORKDIR /app
 
-# By copying in the .env file using the RUN --mount
-# we can inject environment variables into the docker build
-# stage which can enable us to install private registry
-# packages. By doing this in stages the environment
-# variables won't persist in the final layer and we
-# won't risk leaking secrets
+# We need to install some stuff for hadolint
+# hadolint ignore=DL3008
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl git build-essential
+
+# Copy .env file as a secret to enable installing packages from
+# private registries
+# Ignore the DL4006 warning from hadolint because we only
+# run the export command if the .env file exists
+# Ignore the SC2046 as the values returned by the grep can not
+# contain spaces so no separation is possible
+# hadolint ignore=DL4006,SC2046
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=secret,id=dotenv,required=false,dst=.env \
     if [ -f .env ]; then \
-      export $(cat .env | grep 'UV_INDEX' | xargs); \
+      export $(grep 'UV_INDEX' .env | xargs); \
     fi; \
     uv sync --frozen --no-dev --no-install-project;
 
 COPY . /app
 
+
 # Install the project
+# hadolint ignore=DL4006,SC2046
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=secret,id=dotenv,required=false,dst=.env \
     if [ -f .env ]; then \
-      export $(cat .env | grep 'UV_INDEX' | xargs); \
+      export $(grep 'UV_INDEX' .env | xargs); \
     fi; \
     uv sync --frozen --no-dev
 
