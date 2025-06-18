@@ -16,7 +16,7 @@ dependencies = [
 
 [dependency-groups]
 dev=[
-  "pytest~=8.4"
+  "pytest~=8.4",
   "ruff~=0.11.12",
   {% if testing_framework == "pytest" %}
   "pytest-mock~=3.11",
@@ -36,6 +36,9 @@ dev=[
   {% endif %}
   {% if generate_docs == "pdoc" %}
   "pdoc~=14.6",
+  {% endif %}
+  {% if lint_dockerfile %}
+  "hadolint-bin~=2.12",
   {% endif %}
   {% if use_jupyter_notebooks %}
   "ipykernel~=6.29",
