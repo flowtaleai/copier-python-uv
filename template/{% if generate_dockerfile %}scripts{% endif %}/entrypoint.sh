@@ -1,3 +1,3 @@
 #!/bin/bash
 
-uv run {{ package_name.split('.')[-1] }} "$@"
+{{ package_name.split('.')[-1] }} "$@"
