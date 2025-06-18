@@ -461,7 +461,7 @@ def test_uv_version_consistency(tmp_path, copier, git_hosting):
 
     # Check devcontainer
     devcontainer_path = project.path / ".devcontainer" / "devcontainer.json"
-    assert 'uv:1": {"version": "1.1.4"}' in devcontainer_path.read_text()
+    assert 'uv:1": {"version": "0.7.13" }' in devcontainer_path.read_text()
 
 
 @pytest.mark.slow
