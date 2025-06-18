@@ -147,6 +147,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute to t
 
 ## Rationale
 
+- [2025-06-18] We have chosen to switch from poetry to uv:
+  - uv is now both our python version manager and package manager
+  - hatchling is the default build system
+
 - [2025-05-15] We made the following updates to the ruff configuration:
   - Moved maccabe into the strict linter rules
   - Added D105 to the list of rules to ignore. The reason was as follows:
