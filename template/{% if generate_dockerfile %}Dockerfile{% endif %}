@@ -23,35 +23,24 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=secret,id=dotenv,required=false,dst=.env \
-    [[ -f .env ]] && export UV_ENV_FILE=.env; \
+    if [ -f .env ]; then \
+      export $(cat .env | grep 'UV_INDEX' | xargs); \
+    fi; \
     uv sync --frozen --no-dev --no-install-project;
 
 COPY . /app
 
 # Install the project
 RUN --mount=type=cache,target=/root/.cache/uv \
-  uv sync --frozen --no-dev
+    --mount=type=secret,id=dotenv,required=false,dst=.env \
+    if [ -f .env ]; then \
+      export $(cat .env | grep 'UV_INDEX' | xargs); \
+    fi; \
+    uv sync --frozen --no-dev
 
-######################################
-# Set up the development environment #
-######################################
-FROM base AS development
-COPY --from=builder /app /app
-WORKDIR /app
-ENV PATH="/app/.venv/bin:$PATH"
-
-COPY ./scripts ./scripts
-COPY ./src ./src
-ENV DEBUG=1
-ENV ENV="local"
-
-RUN chmod +x scripts/entrypoint.sh
-
-ENTRYPOINT ["scripts/entrypoint.sh"]
-
-######################################
-# Set up the development environment #
-######################################
+#####################################
+# Set up the production environment #
+#####################################
 FROM base AS production
 COPY --from=builder /app /app
 WORKDIR /app
@@ -59,8 +48,6 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 COPY ./scripts ./scripts
 COPY ./src ./src
-ENV DEBUG=0
-ENV ENV="production"
 
 RUN chmod +x scripts/entrypoint.sh
 

@@ -10,7 +10,7 @@ packages = [
 requires-python = "~={{ python_version }}"
 dependencies = [
 {% if package_type == "cli" %}
-  "typer~=0.13.0",
+  "typer~=0.16.0",
 {% endif %}
 ]
 
