@@ -9,12 +9,12 @@
       - id: black
         name: Format files with black
         language: system
-        entry: poetry run black --preview
+        entry: uv run black --preview
         require_serial: true
         types_or: [python, pyi]
       - id: ruff-lint
         name: Lint files with ruff
-        entry: poetry run ruff check
+        entry: uv run ruff check
         language: system
         require_serial: true
         types_or: [python, pyi, jupyter]
@@ -28,7 +28,7 @@
     hooks:
       - id: mypy
         name: mypy
-        entry: poetry run mypy
+        entry: uv run mypy
         args: ["."]
         language: system
         pass_filenames: false

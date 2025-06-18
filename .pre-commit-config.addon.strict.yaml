@@ -12,13 +12,13 @@
         name: Format files with black
         exclude: "template"
         language: system
-        entry: poetry run black --preview
+        entry: uv run black --preview
         require_serial: true
         types_or: [python, pyi]
       - id: ruff-lint
         name: Lint files with ruff
         exclude: "template"
-        entry: poetry run ruff check
+        entry: uv run ruff check
         language: system
         require_serial: true
         types_or: [python, pyi, jupyter]
