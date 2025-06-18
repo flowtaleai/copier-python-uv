@@ -12,9 +12,9 @@ before_script:
 test:
   stage: test_and_lint
   script:
-    - make test
+    - uv run tox -r
 
 linting:
   stage: test_and_lint
   script:
-    - poetry run pre-commit run --all-files
+    - uv run pre-commit run --all-files
