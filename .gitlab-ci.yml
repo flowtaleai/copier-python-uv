@@ -6,13 +6,13 @@ stages:
 
 before_script:
   - apt-get update && apt-get install -y make
-  - pip install poetry==2.1.2
+  - pip install uv==0.7.13
   - make setup-strict
 
 test:
   stage: test_and_lint
   script:
-    - poetry run tox
+    - make test
 
 linting:
   stage: test_and_lint
