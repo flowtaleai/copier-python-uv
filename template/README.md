@@ -41,7 +41,7 @@ If you are using `direnv` adding these to the `.env` file you can autoload them 
 uv add my-superawesome-package --index super-secret-repo=https://your.super.secret.com/package/repository/pypi/simple
 ```
 
-[!NOTE:] Remember that the name of your index (super-secret-repo) and the name of the environment have to match. When searching for credentials `uv` will automatically search for environment variables which include the index name, but will make it uppercase and replace dashes (-) with underscores (_).
+[!NOTE] Remember that the name of your index (super-secret-repo) and the name of the environment have to match. When searching for credentials `uv` will automatically search for environment variables which include the index name, but will make it uppercase and replace dashes (-) with underscores (_).
 
 In case this package repository should only be used for specific packages you'll need to add `explicit = true` under the `[[tool.uv.index]]` section of your newly added index.
 
