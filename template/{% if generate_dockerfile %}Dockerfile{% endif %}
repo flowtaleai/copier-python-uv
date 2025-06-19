@@ -13,6 +13,8 @@ COPY --from=ghcr.io/astral-sh/uv:{{ uv_version }} /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 WORKDIR /app
 
+# DL3008 is ok to ignore because `apt-get update` runs in the same RUN command,
+# and apt cache will not be stale, so outdated packages will not be installed.
 # We need to install some stuff for hadolint
 # hadolint ignore=DL3008
 RUN apt-get update \
