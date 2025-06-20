@@ -43,9 +43,9 @@ For a full explanation of configuring custom indexes and other authentication me
 
 {% if generate_dockerfile %}
 
-### Building a Docker image
+#### Building a Docker Image
 
-The template comes pre-packaged with a dockerfile which uses multi-stage builds to build light-weight images. Due to the use of multi-stage builds and the use of `--mount` to mount secrets, this supports installing packages from private package registries. Below is an example of how you can build a docker image that can install packages from a private package registry (this assumes you've followed the steps described in [the previous section](#installing-package-from-private) and have run `uv sync`)
+Having set up your project or application with various packages, private and public, let's look at containerizing it. The repository comes pre-packaged with a `Dockerfile` which uses multi-stage builds to build light-weight images. By using multi-stage builds and `--mount` to mount secrets, this supports installing packages from private package registries without exposing any secrets, and the secrets will not be visible when running `docker inspect IMAGE_NAME`. To create a docker image which installs your `my-superawesome-package` you can run:
 
 ```bash
 docker build \
