@@ -18,7 +18,7 @@ The project documentation is available at [docs/](docs/).
 ```
 {% endif %}
 
-### Example
+### Examples
 
 #### Installing Package from Private Registry
 
