@@ -18,14 +18,9 @@ The project documentation is available at [docs/](docs/).
 ```
 {% endif %}
 
-### Installing Package from Private Registry
+### Example
 
-When installing a package from a private registry, you'll need to specify where the package should be installed from.
-This can be done with the `--index` option. If the package is in a registry which requires authentication you need to make sure that you've handled authentication before you can install the package.
-
-In this repository there is already support for authentication through environment variables.
-
-#### Example
+#### Installing Package from Private Registry
 
 You have set up your project and want to install `my-superawesome-package` from `https://your.super.secret.com/package/repository/pypi/simple`.
 One way to handle this is to add credentials to your .env file like this:
@@ -43,9 +38,9 @@ uv add my-superawesome-package --index super-secret-repo=https://your.super.secr
 
 > Remember that the name of your index (super-secret-repo) and the name of the environment have to match. When searching for credentials `uv` will automatically search for environment variables which include the index name, but will make it uppercase and replace dashes (-) with underscores (_).
 
-In case this package repository should only be used for specific packages you'll need to add `explicit = true` under the `[[tool.uv.index]]` section of your newly added index.
-
+In case this package repository should _only_ be used for specific packages you'll need to add `explicit = true` under the `[[tool.uv.index]]` section of your newly added index.
 For a full explanation of configuring custom indexes and other authentication methods have a look at the [astral documentation page](https://docs.astral.sh/uv/concepts/projects/dependencies/#index).
+
 {% if generate_dockerfile %}
 
 ### Building a Docker image
