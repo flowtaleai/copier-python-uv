@@ -6,7 +6,7 @@ Thank you for considering contributing to {{ project_name if project_name else d
 
 ### Requirements
 
-- [uv {{ uv_version }}](https://docs.astral.sh/uv/getting-started/installation/)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - Make (optional, for using Makefile commands)
 - Git (for version control)
 - [direnv](https://direnv.net/) (optional, for environment management)
@@ -69,7 +69,10 @@ The project includes a Dockerfile for containerized development and deployment:
 
 1. Build the Docker image:
    ```bash
+   # only public and local packages
    docker build -t {{ distribution_name }}:dev .
+   # also private packages
+   docker build --secret id=dotenv,src=.env -t {{ distribution_name }}:dev
    ```
 
 2. Run the Docker container:
@@ -202,26 +205,23 @@ make serve-docs
 
 ### Adding Python Package Registry Credentials
 
-If you need to use private Python packages, you must configure the `pyproject.toml` as follows:
-
-```toml
-
-[tool.uv.index]
-name="your-private-registry"
-url="https://your.private.registry/url"
-```
-
-If your registry requires authentication you must export environment variables:
+If you need to use private Python packages, you must add index specific credentials like so:
 
 ```bash
-
-export UV_INDEX_YOUR_PRIVATE_REGISTRY_USERNAME=<your-registry-username>;
-export UV_INDEX_YOUR_PRIVATE_REGISTRY_PASSWORD=<your-registry-password-or-token>;
+echo "UV_INDEX_SUPER_SECRET_REPO_USERNAME=clark" >> .env
+echo "UV_INDEX_SUPER_SECRET_REPO_PASSWORD=kent" >> .env
 ```
 
+Once the new environment variables are exported, you can add your super secret package like this:
 
-You can also add the above to the `.env` file so you don't need to export them each time.
+```bash
+uv add my-superawesome-package --index super-secret-repo=https://your.super.secret.com/package/repository/pypi/simple
+```
 
+> Remember that the name of your index (super-secret-repo) and the name of the environment have to match. When searching for credentials `uv` will automatically search for environment variables which include the index name, but will make it uppercase and replace dashes (-) with underscores (_).
+
+In case this package repository should _only_ be used for specific packages you'll need to add `explicit = true` under the `[[tool.uv.index]]` section of your newly added index.
+For a full explanation of configuring custom indexes and other authentication methods have a look at the [astral documentation page](https://docs.astral.sh/uv/concepts/projects/dependencies/#index).
 
 {% if generate_dockerfile %}
 ### Adding Python Package Registry Credentials for Docker Builds
