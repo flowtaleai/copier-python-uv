@@ -114,7 +114,7 @@ After generating a test project, verify it works correctly:
 1. Install dependencies:
    ```bash
    cd /tmp/test-project
-   uv setup-strict
+   make setup-strict
    ```
 
 2. Run tests and linting:
