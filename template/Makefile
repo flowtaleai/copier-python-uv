@@ -16,7 +16,6 @@ help: ## Show this help
 .PHONY: help
 
 setup:  ## Setup the development environment
-	@uv python pin {{ python_version }}
 	@uv sync
 	@cp .pre-commit-config.standard.yaml .pre-commit-config.yaml
 	@uv run pre-commit install
