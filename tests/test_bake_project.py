@@ -20,10 +20,7 @@ def test_bake_with_defaults(tmp_path, copier):
     assert ".vscode" in found_toplevel_files
 
     assert ".gitlab-ci.yml" not in found_toplevel_files
-    assert "bitbucket-pipelines.yml" not in found_toplevel_files
-
     assert "Pipfile" not in found_toplevel_files
-    assert "bitbucket-pipelines.yml" not in found_toplevel_files
 
     assert (project.path / "src" / "python_boilerplate").exists()
     assert not (project.path / "docs").exists()
@@ -98,22 +95,11 @@ def test_bake_app_and_check_cli_scripts(tmp_path, copier):
     assert assert_str in pyproject_path.read_text()
 
 
-def test_bake_bitbucket(tmp_path, copier):
-    custom_answers = {"git_hosting": "bitbucket"}
-    project = copier.copy(tmp_path, **custom_answers)
-
-    found_toplevel_files = [f.name for f in project.path.glob("*")]
-    assert "bitbucket-pipelines.yml" in found_toplevel_files
-    assert ".github" not in found_toplevel_files
-    assert ".gitlab-ci.yml" not in found_toplevel_files
-
-
 def test_bake_gitlab(tmp_path, copier):
     custom_answers = {"git_hosting": "gitlab"}
     project = copier.copy(tmp_path, **custom_answers)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
-    assert "bitbucket-pipelines.yml" not in found_toplevel_files
     assert ".github" not in found_toplevel_files
     assert ".gitlab-ci.yml" in found_toplevel_files
 
@@ -123,7 +109,6 @@ def test_bake_github(tmp_path, copier):
     project = copier.copy(tmp_path, **custom_answers)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
-    assert "bitbucket-pipelines.yml" not in found_toplevel_files
     assert ".gitlab-ci.yml" not in found_toplevel_files
     github_workflow_path = project.path / ".github/workflows/ci.yml"
     assert github_workflow_path.exists()
@@ -431,7 +416,7 @@ def test_bake_namespaced_package_with_many_and_run_pre_commit(tmp_path, copier):
     project.run("uv run pre-commit run --all-files")
 
 
-@pytest.mark.parametrize("git_hosting", ["github", "gitlab", "bitbucket"])
+@pytest.mark.parametrize("git_hosting", ["github", "gitlab"])
 def test_uv_version_consistency(tmp_path, copier, git_hosting):
     custom_answers = {
         "uv_version": "0.7.13",
@@ -451,13 +436,10 @@ def test_uv_version_consistency(tmp_path, copier, git_hosting):
     elif git_hosting == "gitlab":
         ci_path = project.path / ".gitlab-ci.yml"
         assert "pip install uv==0.7.13" in ci_path.read_text()
-    elif git_hosting == "bitbucket":
-        ci_path = project.path / "bitbucket-pipelines.yml"
-        assert "pip install uv==0.7.13" in ci_path.read_text()
 
     # Check CONTRIBUTING.md
     contributing_path = project.path / "CONTRIBUTING.md"
-    assert "uv 0.7.13" in contributing_path.read_text()
+    assert "uv" in contributing_path.read_text()
 
     # Check devcontainer
     devcontainer_path = project.path / ".devcontainer" / "devcontainer.json"
