@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1
 # Keep this syntax directive! It's used to enable Docker BuildKit
-# This dockerfile is adapted from: https://depot.dev/docs/container-builds/how-to-guides/optimal-dockerfiles/python-uv-dockerfile
+# This dockerfile is adapted from:
+# https://depot.dev/docs/container-builds/how-to-guides/optimal-dockerfiles/python-uv-dockerfile
+# and https://github.com/astral-sh/uv-docker-example/blob/main/multistage.Dockerfile
 
 FROM python:{{ python_version }}-slim-bookworm AS base
 
