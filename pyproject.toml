@@ -82,7 +82,7 @@ convention = "google"
 
 
 [tool.pytest.ini_options]
-pythonpath = "src"
+testpaths = ["tests"]
 markers = [
     "slow: slow tests",
     "venv: tests that modify the virtual environment possibly causing interferences; should be run with tox",
