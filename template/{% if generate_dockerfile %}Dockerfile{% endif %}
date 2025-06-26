@@ -2,15 +2,17 @@
 # Keep this syntax directive! It's used to enable Docker BuildKit
 # This dockerfile is adapted from: https://depot.dev/docs/container-builds/how-to-guides/optimal-dockerfiles/python-uv-dockerfile
 
-FROM python:3.12-slim-bookworm AS base
+FROM python:{{ python_version }}-slim-bookworm AS base
 
 ############################
 # Set up the builder layer #
 ############################
-FROM base AS builder
+FROM base as builder
 COPY --from=ghcr.io/astral-sh/uv:{{ uv_version }} /uv /bin/uv
 
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0
 WORKDIR /app
 
 # DL3008 is ok to ignore because `apt-get update` runs in the same RUN command,
@@ -34,7 +36,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     if [ -f .env ]; then \
       export $(grep 'UV_INDEX' .env | xargs); \
     fi; \
-    uv sync --frozen --no-dev --no-install-project;
+    uv sync --locked --no-dev --no-install-project;
 
 COPY . /app
 
@@ -42,17 +44,17 @@ COPY . /app
 # Install the project
 # hadolint ignore=DL4006,SC2046
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=secret,id=buildenv,required=false,dst=.env \
+    --mount=type=secret,id=buildenv,required=false,target=.env \
     if [ -f .env ]; then \
       export $(grep 'UV_INDEX' .env | xargs); \
     fi; \
-    uv sync --frozen --no-dev
+    uv sync --locked --no-dev
 
 #####################################
 # Set up the production environment #
 #####################################
 FROM base AS production
-COPY --from=builder /app /app
+COPY --from=builder --chown=app:app /app /app
 WORKDIR /app
 ENV PATH="/app/.venv/bin:$PATH"
 
