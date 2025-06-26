@@ -72,7 +72,7 @@ The project includes a Dockerfile for containerized development and deployment:
    # only public and local packages
    docker build -t {{ distribution_name }}:dev .
    # also private packages
-   docker build --secret id=dotenv,src=.env -t {{ distribution_name }}:dev
+   docker build --secret id=buildenv,src=<(env | grep UV_INDEX) -t {{ distribution_name }}:dev
    ```
 
 2. Run the Docker container:
@@ -208,8 +208,8 @@ make serve-docs
 If you need to use private Python packages, you must add index specific credentials like so:
 
 ```bash
-echo "UV_INDEX_SUPER_SECRET_REPO_USERNAME=clark" >> .env
-echo "UV_INDEX_SUPER_SECRET_REPO_PASSWORD=kent" >> .env
+echo "UV_INDEX_SUPER_SECRET_REPO_USERNAME=clark" >> .envrc
+echo "UV_INDEX_SUPER_SECRET_REPO_PASSWORD=kent" >> .envrc
 ```
 
 Once the new environment variables are exported, you can add your super secret package like this:
@@ -222,20 +222,6 @@ uv add my-superawesome-package --index super-secret-repo=https://your.super.secr
 
 In case this package repository should _only_ be used for specific packages you'll need to add `explicit = true` under the `[[tool.uv.index]]` section of your newly added index.
 For a full explanation of configuring custom indexes and other authentication methods have a look at the [astral documentation page](https://docs.astral.sh/uv/concepts/projects/dependencies/#index).
-
-{% if generate_dockerfile %}
-### Adding Python Package Registry Credentials for Docker Builds
-
-When building the Docker image with private dependencies:
-
-```bash
-docker build \
-  --build-arg PYTHON_REGISTRY_NAME=your_private_registry_name \
-  --build-arg PYTHON_REGISTRY_USERNAME=your_username \
-  --build-arg PYTHON_REGISTRY_PASSWORD=your_personal_access_token \
-  -t your_image_name:tag .
-```
-{% endif %}
 
 ## Release Process
 
