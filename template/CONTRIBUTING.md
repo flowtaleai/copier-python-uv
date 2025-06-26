@@ -6,23 +6,17 @@ Thank you for considering contributing to {{ project_name if project_name else d
 
 ### Requirements
 
-- Python {{ python_version }}
-- [Poetry {{ poetry_version }}](https://python-poetry.org/docs/#installation)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - Make (optional, for using Makefile commands)
 - Git (for version control)
 - [direnv](https://direnv.net/) (optional, for environment management)
-- [pyenv](https://github.com/pyenv/pyenv) (optional, for Python version management)
 {% if generate_dockerfile %}
 - [Docker](https://docs.docker.com/get-docker/) (for containerized development/deployment)
 {% endif %}
 
 ### Setting Up Your Environment
 
-1. Set up Python environment:
-
-   If you have pyenv installed, the correct Python version ({{ python_version }}) will be automatically installed and used thanks to the `.python-version` file.
-
-2. Install dependencies and set up the development environment:
+1. Install dependencies and set up the development environment:
    ```bash
    make setup
    ```
@@ -34,18 +28,18 @@ Thank you for considering contributing to {{ project_name if project_name else d
 
    If you don't have Make available, you can run these commands directly:
    ```bash
-   poetry install
-   poetry run pre-commit install
+   uv sync
+   uv run pre-commit install
    ```
 
-3. Configure direnv (optional but recommended):
+2. Configure direnv (optional but recommended):
    ```bash
    # After installing direnv
    direnv allow
    ```
    This will:
    - Automatically load environment variables from `.env`
-   - Activate the poetry virtual environment using the `layout_poetry` directive in `.envrc`
+   - Activate the uv virtual environment using the `layout_uv` directive in `.envrc`
 
 {% if ide == 'vscode' %}
 ### IDE Configuration
@@ -59,8 +53,8 @@ When using Visual Studio Code, open the project folder and install the recommend
 To work with Jupyter notebooks in this project:
 
 ```bash
-poetry install --with jupyterlab
-poetry run jupyter lab
+uv sync --group jupyterlab
+uv run jupyter lab
 ```
 
 {% if strip_jupyter_outputs %}
@@ -68,28 +62,6 @@ Note: The pre-commit hooks will automatically strip output from notebooks before
 {% endif %}
 {% endif %}
 
-{% if generate_dockerfile %}
-### Docker Development Environment
-
-The project includes a Dockerfile for containerized development and deployment:
-
-1. Build the Docker image:
-   ```bash
-   docker build -t {{ distribution_name }}:dev .
-   ```
-
-2. Run the Docker container:
-   ```bash
-   docker run -it --rm {{ distribution_name }}:dev
-   ```
-
-For development with mounted source code:
-   ```bash
-   docker run -it --rm -v $(pwd):/app {{ distribution_name }}:dev
-   ```
-
-See the [Dockerfile](./Dockerfile) for more details on the container setup.
-{% endif %}
 
 ## Development Workflow
 
@@ -132,7 +104,7 @@ The `.envrc` file (used by direnv) contains development-specific settings:
 - PATH adjustments
 - Tool configurations
 - Development convenience settings
-- Poetry virtual environment activation (via `layout_poetry`)
+- uv virtual environment activation (via `layout_uv`)
 
 This file should:
 - Be committed to version control (without sensitive information)
@@ -141,8 +113,8 @@ This file should:
 
 Example `.envrc` file:
 ```
-# Automatically activate poetry environment
-layout poetry
+# Automatically activate uv environment
+layout uv
 
 # Development-specific settings
 export DEBUG=true
@@ -154,7 +126,7 @@ export PYTHONPATH=$PWD:$PYTHONPATH
 
 With direnv properly configured:
 1. Environment variables from both `.env` and `.envrc` will be automatically loaded when you enter the project directory
-2. The Poetry virtual environment will be automatically activated
+2. The uv virtual environment will be automatically activated
 3. All settings will be unloaded when you leave the directory
 
 #### Production Environment
@@ -175,7 +147,7 @@ make test
 
 Or without Make:
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
 ### Code Formatting and Linting
@@ -204,31 +176,48 @@ make serve-docs
 ```
 {% endif %}
 
+{% if generate_dockerfile %}
+## Build Docker Images
+
+The project includes a Dockerfile for containerized development and deployment:
+
+1. Build the Docker image:
+   ```bash
+   # only public and local packages
+   docker build -t {{ distribution_name }}:latest .
+   # also private packages
+   docker build --secret id=buildenv,src=<(env | grep UV_INDEX) -t {{ distribution_name }}:latest
+   ```
+
+2. Run the Docker container:
+   ```bash
+   docker run -it --rm {{ distribution_name }}:latest
+   ```
+
+See the [Dockerfile](./Dockerfile) for more details on the container setup.
+{% endif %}
+
 ## Working with Private Python Packages
 
 ### Adding Python Package Registry Credentials
 
-If you need to use private Python packages, configure authentication with Poetry:
+If you need to use private Python packages, you must add index specific credentials like so:
 
 ```bash
-poetry config http-basic.my_registry your_username your_personal_access_token
-poetry source add my_registry https://gitlab.mycompany.com/api/v4/projects/1234/packages/pypi/simple
-poetry add private-package@0.1.0 --source my_registry
+echo "UV_INDEX_SUPER_SECRET_REPO_USERNAME=clark" >> .env.build
+echo "UV_INDEX_SUPER_SECRET_REPO_PASSWORD=kent" >> .env.build
 ```
 
-{% if generate_dockerfile %}
-### Adding Python Package Registry Credentials for Docker Builds
-
-When building the Docker image with private dependencies:
+Once the new environment variables are exported, you can add your super secret package like this:
 
 ```bash
-docker build \
-  --build-arg PYTHON_REGISTRY_NAME=your_private_registry_name \
-  --build-arg PYTHON_REGISTRY_USERNAME=your_username \
-  --build-arg PYTHON_REGISTRY_PASSWORD=your_personal_access_token \
-  -t your_image_name:tag .
+uv add my-superawesome-package --index super-secret-repo=https://your.super.secret.com/package/repository/pypi/simple
 ```
-{% endif %}
+
+> Remember that the name of your index (super-secret-repo) and the name of the environment have to match. When searching for credentials `uv` will automatically search for environment variables which include the index name, but will make it uppercase and replace dashes (-) with underscores (_).
+
+In case this package repository should _only_ be used for specific packages you'll need to add `explicit = true` under the `[[tool.uv.index]]` section of your newly added index.
+For a full explanation of configuring custom indexes and other authentication methods have a look at the [astral documentation page](https://docs.astral.sh/uv/concepts/projects/dependencies/#index).
 
 ## Release Process
 

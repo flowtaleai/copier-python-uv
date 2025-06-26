@@ -1,61 +1,68 @@
-[tool.poetry]
+[project]
 name = "{{ distribution_name }}"
 version = "{{ version }}"
 description = "{{ project_short_description }}"
-authors = ["{{ author_name }} <{{ author_email }}>"]
-license = "{{ license }}"
+authors = [{ name="{{ author_name }}", email="{{ author_email }}"}]
+license = { file = "LICENSE" }
 packages = [
   { include = "{{ package_name | replace('.', _copier_conf.sep) }}", from = "src" },
 ]
-
-[tool.poetry.dependencies]
-python = "^{{ python_version }}"
+requires-python = "~={{ python_version }}"
+dependencies = [
 {% if package_type == "cli" %}
-typer = "^0.13.0"
+  "typer~=0.16.0",
 {% endif %}
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.4.0"
-ruff = "^0.11.12"
-{% if testing_framework == "pytest" %}
-pytest-mock = "^3.11.1"
-{% endif %}
-{% if type_checker == "mypy" %}
-mypy = "^1.11.2"
-{% endif %}
-black = "^25.1.0"
-pre-commit = "^4.2.0"
-bump2version = "^1.0.1"
-detect-secrets = "^1.4.0"
-{% if generate_docs == "mkdocs" %}
-mkdocstrings-python = "^1.10.8"
-mkdocs-material = "^9.5.32"
-mkdocs-gen-files = "^0.5.0"
-mkdocs-literate-nav = "^0.6.1"
-{% endif %}
-{% if generate_docs == "pdoc" %}
-pdoc = "^14.6"
-{% endif %}
-{% if lint_dockerfile %}
-hadolint-bin = "^2.12.0"
-{% endif %}
-{% if use_jupyter_notebooks %}
-ipykernel = "^6.29.4"
-nbdime = "^4.0.1"
+[dependency-groups]
+dev=[
+  "pytest~=8.4",
+  "ruff~=0.11.12",
+  {% if testing_framework == "pytest" %}
+  "pytest-mock~=3.11",
+  {% endif %}
+  {% if type_checker == "mypy" %}
+  "mypy~=1.11",
+  {% endif %}
+  "black~=25.1",
+  "pre-commit~=4.2",
+  "bump2version~=1.0",
+  "detect-secrets~=1.4",
+  {% if generate_docs == "mkdocs" %}
+  "mkdocstrings-python~=1.10",
+  "mkdocs-material~=9.5",
+  "mkdocs-gen-files~=0.5.0",
+  "mkdocs-literate-nav~=0.6.1",
+  {% endif %}
+  {% if generate_docs == "pdoc" %}
+  "pdoc~=14.6",
+  {% endif %}
+  {% if lint_dockerfile %}
+  "hadolint-bin~=2.12",
+  {% endif %}
+  {% if use_jupyter_notebooks %}
+  "ipykernel~=6.29",
+  "nbdime~=4.0"
+]
 
-[tool.poetry.group.jupyterlab]
-optional = true
-dependencies = { jupyterlab = "^4.2.2" }
+jupyterlab=[
+  "jupyterlab>=4.2.2,<5"
 {% endif %}
-
-[build-system]
-requires = ["poetry>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+]
 {% if package_type == "cli" %}
 
-[tool.poetry.scripts]
+[project.scripts]
 {{ package_name.split('.')[-1] }} = "{{ package_name }}.cli:app"
 {% endif %}
+
+# This may change in the future once the `uv` build backend
+# is out of preview
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{ package_name | replace('.', _copier_conf.sep) }}"]
 
 [tool.black]
 line-length = {{ max_line_length }}

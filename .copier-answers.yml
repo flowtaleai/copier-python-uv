@@ -1,8 +1,8 @@
 _commit: 2.1.0
-_src_path: git@gitlab.flowtale.ai:flowtale/internal/cookiecutter-python.git
+_src_path: git@gitlab.flowtale.ai:flowtale/engineering/templates/copier-python-uv.git
 author_email: mtn@flowtale.ai
 author_name: Flowtale
-distribution_name: copier-python-poetry
+distribution_name: copier-python-uv
 generate_docs: none
 generate_example_code: false
 git_hosting: gitlab
@@ -11,9 +11,9 @@ license: MIT license
 max_line_length: 88
 package_name: template
 package_type: library
-poetry_version: 2.1.2
-project_name: Copier Python Poetry
-project_short_description: Opinionated copier template for python projects using poetry
+uv_version: 0.7.13
+project_name: Copier Python UV
+project_short_description: Opinionated copier template for python projects using uv
 python_version: '3.12'
 testing_framework: pytest
 type_checker: none

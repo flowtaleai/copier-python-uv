@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  POETRY_VERSION: "{{ poetry_version }}"
+  UV_VERSION: "{{ uv_version }}"
 
 jobs:
   test:
@@ -23,15 +23,15 @@ jobs:
           apt-get update || sudo apt-get update
           apt-get install -y make || sudo apt-get install -y make
           python -m pip install --upgrade pip
-          pip install poetry==${POETRY_VERSION}
+          pip install uv==${UV_VERSION}
           make setup-strict
       - name: Test with pytest
         run: |
           {% if testing_framework == "pytest" %}
-          poetry run pytest
+          uv run pytest
           {% endif %}
           {% if testing_framework == "unittest" %}
-          poetry run python -m unittest discover
+          uv run python -m unittest discover
           {% endif %}
 
   lint:
@@ -47,8 +47,8 @@ jobs:
           apt-get update || sudo apt-get update
           apt-get install -y make || sudo apt-get install -y make
           python -m pip install --upgrade pip
-          pip install poetry==${POETRY_VERSION}
+          pip install uv==${UV_VERSION}
           make setup-strict
       - name: Lint with pre-commit
         run: |
-          make lint
+          uv run pre-commit run --all-files

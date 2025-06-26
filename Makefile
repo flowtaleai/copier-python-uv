@@ -2,7 +2,7 @@
 
 VERSION_PART ?= $(shell bash -c 'read -p "Version part [major, minor, patch]: " version_part; echo $$version_part')
 bump:  ## Bump the project version and create a tag
-	poetry run bump2version $(VERSION_PART)
+	uv run bump2version $(VERSION_PART)
 .PHONY: bump
 
 help: ## Show this help
@@ -12,10 +12,9 @@ help: ## Show this help
 .PHONY: help
 
 setup:  ## Setup the development environment
-	-@pyenv install --skip-existing
-	@poetry install
+	@uv sync
 	@cp .pre-commit-config.standard.yaml .pre-commit-config.yaml
-	@poetry run pre-commit install
+	@uv run pre-commit install
 
 setup-strict: setup  ## Setup the development environment with strict pre-commit rules
 	@echo "Appending strict pre-commit rules..."
@@ -25,11 +24,11 @@ lint:   ## Runs linting on all project files
 	@tempfile=$$(mktemp) && \
 	trap 'rm -f $$tempfile' EXIT && \
 	cat .pre-commit-config.standard.yaml .pre-commit-config.addon.strict.yaml > $$tempfile && \
-	poetry run pre-commit run --all-files -c $$tempfile
+	uv run pre-commit run --all-files -c $$tempfile
 .PHONY: lint
 
 test:  ## Run the project tests
-	@poetry run tox
+	@uv run tox -r
 .PHONY: test
 
 testproject:  ## Test the copier template by creating a new project in temporary directory

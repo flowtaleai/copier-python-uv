@@ -1,5 +1,4 @@
 import pytest
-from prompt_toolkit.validation import ValidationError
 
 
 def test_validate_author_name_valid(tmp_path, copier):
@@ -51,7 +50,10 @@ def test_validate_distribtuion_name_valid(tmp_path, copier, distribution_name):
 )
 def test_validate_distribtuion_name_invalid(tmp_path, copier, distribution_name):
     custom_answers = {"distribution_name": distribution_name}
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValueError,
+        match="distribution name must start with a lowercase letter and can",
+    ):
         copier.copy(tmp_path, **custom_answers)
 
 
@@ -84,7 +86,10 @@ def test_validate_package_name_valid(tmp_path, copier, package_name):
 )
 def test_validate_package_name_invalid(tmp_path, copier, package_name):
     custom_answers = {"package_name": package_name}
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValueError,
+        match="package name must start with a lowercase letter",
+    ):
         copier.copy(tmp_path, **custom_answers)
 
 
@@ -97,7 +102,10 @@ def test_validate_email_valid(tmp_path, copier, email):
 @pytest.mark.parametrize("email", ["", " ", "test@test", "test.com"])
 def test_validate_email_invalid(tmp_path, copier, email):
     custom_answers = {"author_email": email}
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValueError,
+        match="Author email must be a valid email address",
+    ):
         copier.copy(tmp_path, **custom_answers)
 
 
@@ -110,18 +118,21 @@ def test_validate_version_valid(tmp_path, copier, version):
 @pytest.mark.parametrize("version", ["invalid_version", "1.2.3.4.5.6.a"])
 def test_validate_version_invalid(tmp_path, copier, version):
     custom_answers = {"version": version}
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValueError,
+        match="Version must be in the format of 'MAJOR.MINOR.PATCH'",
+    ):
         copier.copy(tmp_path, **custom_answers)
 
 
-@pytest.mark.parametrize("poetry_version", ["1.8.3", "2.0.0-alpha", "3.1.4+build123"])
-def test_validate_poetry_version_valid(tmp_path, copier, poetry_version):
-    custom_answers = {"poetry_version": poetry_version}
+@pytest.mark.parametrize("uv_version", ["0.7.11", "0.7.13"])
+def test_validate_uv_version_valid(tmp_path, copier, uv_version):
+    custom_answers = {"uv_version": uv_version}
     copier.copy(tmp_path, **custom_answers)
 
 
-@pytest.mark.parametrize("poetry_version", ["", "1.8", "1.8.3.4", "invalid_version"])
-def test_validate_poetry_version_invalid(tmp_path, copier, poetry_version):
-    custom_answers = {"poetry_version": poetry_version}
-    with pytest.raises(ValidationError):
+@pytest.mark.parametrize("uv_version", ["", "1.0.0.1.1", "invalid_version"])
+def test_validate_uv_version_invalid(tmp_path, copier, uv_version):
+    custom_answers = {"uv_version": uv_version}
+    with pytest.raises(ValueError, match="uv version must follow semantic versioning"):
         copier.copy(tmp_path, **custom_answers)

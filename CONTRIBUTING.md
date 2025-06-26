@@ -1,41 +1,17 @@
-# Contributing to Copier Python Poetry
+# Contributing to Copier Python UV
 
-This document provides guidelines for contributing to the Copier Python Poetry project. Since this is a template generator, there are two distinct contexts to consider: the template itself and the projects generated from it.
+This document provides guidelines for contributing to the Copier Python UV project. Since this is a template generator, there are two distinct contexts to consider: the template itself and the projects generated from it.
 
 ## Template Development
 
 ### Prerequisites
 
-- Python 3.12 (suggested install method: system)
-- [Copier](https://copier.readthedocs.io/) (suggested install method: pipx)
-- [Poetry](https://python-poetry.org/docs#installation) 2.1.2
-- [pyenv](https://github.com/pyenv/pyenv#getting-pyenv) (recommended)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.7.13
+- [Copier](https://copier.readthedocs.io/) (suggested install method: uvx)
 - [direnv](https://direnv.net/) (recommended for environment management)
 - Git
 
 ### Development Environment Setup
-
-#### Installing pyenv (recommended)
-
-This step can be skipped if your system Python version matches the one specified in the `.python-version` file.
-
-Add the following to `~/.bashrc` or `~/.zshrc` to initialize `pyenv`:
-
-```bash
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-```
-
-#### Configuring Poetry
-
-To make Poetry use the Python interpreter specified by pyenv:
-
-```bash
-poetry config virtualenvs.prefer-active-python true
-```
-
-This setting allows for easier project folder renaming without recreating the virtual environment, and helps VSCode detect the Poetry environment automatically.
 
 #### Setting up direnv (recommended)
 
@@ -62,7 +38,7 @@ make test
 This runs tests using tox. If you encounter environment-related issues, you can recreate the environments:
 
 ```bash
-poetry run tox -r
+uv run tox -r
 ```
 
 #### Generating Test Projects
@@ -96,7 +72,7 @@ poetry run tox -r
 
    # Then generate a test project
    mkdir /tmp/copier-test-project && cd /tmp/copier-test-project && \
-   copier copy /media/data/software/copier-python-poetry . -r HEAD \
+   copier copy /media/data/software/copier-python-uv . -r HEAD \
    --data-file ~/copier-default-answers.yml && \
    git init && git add . && git commit -m "initial commit" && make setup-strict && direnv allow
    ```
@@ -138,7 +114,7 @@ After generating a test project, verify it works correctly:
 1. Install dependencies:
    ```bash
    cd /tmp/test-project
-   poetry install
+   make setup-strict
    ```
 
 2. Run tests and linting:
@@ -153,7 +129,7 @@ After generating a test project, verify it works correctly:
    make docs
 
    # For CLI projects
-   poetry run your-package-name --help
+   uv run your-package-name --help
    ```
 
 #### Using a Default Answers File
@@ -205,7 +181,7 @@ The template project includes several useful commands:
 The template follows this structure:
 
 ```
-copier-python-poetry/
+copier-python-uv/
 ├── template/                  # Template files that will be copied
 ├── tests/                     # Template tests
 ├── copier.yml                 # Copier configuration
@@ -330,4 +306,4 @@ This helps future contributors understand the reasoning behind design decisions.
 5. Resolve any merge conflicts that arise from the update
 6. Commit the applied changes with a message describing the update
 
-Thank you for contributing to Copier Python Poetry!
+Thank you for contributing to Copier Python UV!
