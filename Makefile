@@ -12,7 +12,7 @@ help: ## Show this help
 .PHONY: help
 
 setup:  ## Setup the development environment
-	@uv sync --no-install-project
+	@uv sync
 	@cp .pre-commit-config.standard.yaml .pre-commit-config.yaml
 	@uv run pre-commit install
 
