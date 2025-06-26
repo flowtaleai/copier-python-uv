@@ -541,3 +541,20 @@ def test_without_hadolint(tmp_path, copier):
 
     assert "hadolint" not in pre_commit_path.read_text()
     assert "hadolint" not in pyproject_path.read_text()
+
+
+def test_mypy_with_mkdocs(tmp_path, copier):
+    custom_answers = {
+        "generate_docs": "mkdocs",
+        "type_checker": "mypy",
+    }
+    project = copier.copy(tmp_path, **custom_answers)
+
+    project.run("git init")
+    project.run("git add .")
+    project.run("git config user.name 'User Name'")
+    project.run("git config user.email 'user@email.org'")
+    project.run("git commit -m init")
+
+    project.run("make setup-strict")
+    project.run("make lint")
