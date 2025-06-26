@@ -62,31 +62,6 @@ Note: The pre-commit hooks will automatically strip output from notebooks before
 {% endif %}
 {% endif %}
 
-{% if generate_dockerfile %}
-### Docker Development Environment
-
-The project includes a Dockerfile for containerized development and deployment:
-
-1. Build the Docker image:
-   ```bash
-   # only public and local packages
-   docker build -t {{ distribution_name }}:dev .
-   # also private packages
-   docker build --secret id=buildenv,src=<(env | grep UV_INDEX) -t {{ distribution_name }}:dev
-   ```
-
-2. Run the Docker container:
-   ```bash
-   docker run -it --rm {{ distribution_name }}:dev
-   ```
-
-For development with mounted source code:
-   ```bash
-   docker run -it --rm -v $(pwd):/app {{ distribution_name }}:dev
-   ```
-
-See the [Dockerfile](./Dockerfile) for more details on the container setup.
-{% endif %}
 
 ## Development Workflow
 
@@ -199,6 +174,27 @@ To serve documentation locally for development:
 ```bash
 make serve-docs
 ```
+{% endif %}
+
+{% if generate_dockerfile %}
+## Build Docker Images
+
+The project includes a Dockerfile for containerized development and deployment:
+
+1. Build the Docker image:
+   ```bash
+   # only public and local packages
+   docker build -t {{ distribution_name }}:latest .
+   # also private packages
+   docker build --secret id=buildenv,src=<(env | grep UV_INDEX) -t {{ distribution_name }}:latest
+   ```
+
+2. Run the Docker container:
+   ```bash
+   docker run -it --rm {{ distribution_name }}:latest
+   ```
+
+See the [Dockerfile](./Dockerfile) for more details on the container setup.
 {% endif %}
 
 ## Working with Private Python Packages
