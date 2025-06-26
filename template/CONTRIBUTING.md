@@ -208,8 +208,8 @@ make serve-docs
 If you need to use private Python packages, you must add index specific credentials like so:
 
 ```bash
-echo "UV_INDEX_SUPER_SECRET_REPO_USERNAME=clark" >> .envrc
-echo "UV_INDEX_SUPER_SECRET_REPO_PASSWORD=kent" >> .envrc
+echo "UV_INDEX_SUPER_SECRET_REPO_USERNAME=clark" >> .env.build
+echo "UV_INDEX_SUPER_SECRET_REPO_PASSWORD=kent" >> .env.build
 ```
 
 Once the new environment variables are exported, you can add your super secret package like this:
