@@ -482,8 +482,8 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
     pyproject_content = pyproject_path.read_text()
     src_exclude_path = "src/mypackage/exclude_me.py"
     updated_content = pyproject_content.replace(
-        'exclude = ["tests/*", "docs/*"]',
-        f'exclude = ["tests/*", "docs/*", "{src_exclude_path}"]',
+        'exclude = ["tests/*"]',
+        f'exclude = ["tests/*", "{src_exclude_path}"]',
     )
     pyproject_path.write_text(updated_content)
 
@@ -541,3 +541,20 @@ def test_without_hadolint(tmp_path, copier):
 
     assert "hadolint" not in pre_commit_path.read_text()
     assert "hadolint" not in pyproject_path.read_text()
+
+
+def test_mypy_with_mkdocs(tmp_path, copier):
+    custom_answers = {
+        "generate_docs": "mkdocs",
+        "type_checker": "mypy",
+    }
+    project = copier.copy(tmp_path, **custom_answers)
+
+    project.run("git init")
+    project.run("git add .")
+    project.run("git config user.name 'User Name'")
+    project.run("git config user.email 'user@email.org'")
+    project.run("git commit -m init")
+
+    project.run("make setup-strict")
+    project.run("make lint")
