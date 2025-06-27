@@ -482,8 +482,8 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
     pyproject_content = pyproject_path.read_text()
     src_exclude_path = "src/mypackage/exclude_me.py"
     updated_content = pyproject_content.replace(
-        'exclude = ["tests/*", "docs/*"]',
-        f'exclude = ["tests/*", "docs/*", "{src_exclude_path}"]',
+        'exclude = ["tests/*"]',
+        f'exclude = ["tests/*", "{src_exclude_path}"]',
     )
     pyproject_path.write_text(updated_content)
 
