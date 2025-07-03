@@ -176,3 +176,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute to t
   - For existing projects with incomplete typing: This may cause many new errors for imported modules that don't have complete type annotations. In these cases, you may need to install type stubs for third-party libraries that don't include their own typing (pip install types-libraryname). For internal libraries without complete typing, consider changing this setting to `follow_imports = skip` in your mypy configuration.
 
 - [2025-05-15] The distribution name validator ensures that the distribution name adheres to Python packaging conventions by starting with a lowercase letter or digit, allowing only lowercase letters, digits, dots, underscores, or hyphens, and limiting the name to a maximum of three dot-separated components. This aligns with [PEP 423](https://peps.python.org/pep-0423/)'s recommendations to avoid deep nesting and maintain consistent, readable package names.​
+
+- [2025-07-03] We now use the `.jinja` suffix for all template files containing Jinja2 templating logic:
+  - Files with Jinja2 syntax now have a double extension (e.g., `pyproject.toml.jinja`, `__init__.py.jinja`)
+  - Static files that are copied as-is retain their original extensions

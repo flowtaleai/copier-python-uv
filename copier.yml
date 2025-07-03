@@ -5,6 +5,10 @@ _envops:
   trim_blocks: true
   keep_trailing_newline: true
 
+# Finds all .jinja files and removes the .jinja extension by renaming them
+_tasks:
+  - "find . -type f -name '*.jinja' -exec bash -c 'mv \"$1\" \"${1%.jinja}\"' _ {} \\;"
+
 # ====== QUESTIONS ======
 author_name:
   type: str
