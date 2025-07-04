@@ -203,12 +203,7 @@ Template files follow these naming conventions:
 When creating or modifying template files:
 
 1. If a file contains any Jinja2 templating syntax (`{{ }}`, `{% %}`, etc.), use the `.jinja` suffix
-2. For conditional files (those that only exist under certain conditions), use the `.jinja` suffix on the conditional path(`{% if generate_docs %}docs/index.md.jinja{% endif %}`)
-3. The `.jinja` suffix is automatically removed during project generation by this task in `copier.yml`:
-```yaml
-_tasks:
-  - "find . -type f -name '*.jinja' -exec bash -c 'mv \"$1\" \"${1%.jinja}\"' _ {} \\;"
-```
+2. The `.jinja` suffix is automatically removed during project generation
 
 ### Recursive Template Structure
 
