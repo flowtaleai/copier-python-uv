@@ -174,3 +174,8 @@ cython_debug/
 
 # Pre-commit
 .pre-commit-config.yaml
+
+# Jinja template files
+*.jinja.swp
+*.jinja~
+.idea/jinja-templates

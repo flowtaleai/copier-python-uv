@@ -1,4 +1,3 @@
-_templates_suffix: ""
 _subdirectory: template
 _envops:
   lstrip_blocks: true
