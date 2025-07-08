@@ -193,6 +193,18 @@ When modifying template files:
 - Use conditional blocks when appropriate: `{% if condition %}...{% endif %}`
 - Test thoroughly after changes
 
+### Template File Naming Convention
+
+Template files follow these naming conventions:
+
+- **Static files** (copied as-is): Use standard extensions (e.g., `.py`, `.md`, `.toml`)
+- **Template files** (containing Jinja2 logic): Add `.jinja` suffix (e.g., `pyproject.toml.jinja`, `__init__.py.jinja`)
+
+When creating or modifying template files:
+
+1. If a file contains any Jinja2 templating syntax (`{{ }}`, `{% %}`, etc.), use the `.jinja` suffix
+2. The `.jinja` suffix is automatically removed during project generation
+
 ### Recursive Template Structure
 
 Importantly, the outer project itself is based on its own template. This creates a recursive structure:
