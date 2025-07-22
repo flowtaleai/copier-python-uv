@@ -86,6 +86,7 @@ current_version = "2.1.0"
 commit = true
 tag = true
 tag_name = "{new_version}"
+pre_commit_hooks = ["uv sync", "git add uv.lock"]
 
 [[tool.bumpversion.files]]
 filename = ".copier-answers.yml"

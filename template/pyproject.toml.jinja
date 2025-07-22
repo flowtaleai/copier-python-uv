@@ -144,6 +144,7 @@ current_version = "{{ version }}"
 commit = true
 tag = true
 tag_name = "{new_version}"
+pre_commit_hooks = ["uv sync", "git add uv.lock"]
 
 [[tool.bumpversion.files]]
 filename = "pyproject.toml"
