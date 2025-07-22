@@ -26,7 +26,7 @@ dev=[
   {% endif %}
   "black~=25.1",
   "pre-commit~=4.2",
-  "bump2version~=1.0",
+  "bump-my-version>=1.2.1,<2",
   "detect-secrets~=1.4",
   {% if generate_docs == "mkdocs" %}
   "mkdocstrings-python~=1.10",
@@ -138,3 +138,14 @@ namespace_packages = true
 explicit_package_bases = true
 {% endif %}
 {% endif %}
+
+[tool.bumpversion]
+current_version = "{{ version }}"
+commit = true
+tag = true
+tag_name = "{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""

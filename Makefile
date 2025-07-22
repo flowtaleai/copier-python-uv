@@ -2,7 +2,7 @@
 
 VERSION_PART ?= $(shell bash -c 'read -p "Version part [major, minor, patch]: " version_part; echo $$version_part')
 bump:  ## Bump the project version and create a tag
-	uv run bump2version $(VERSION_PART)
+	@uv run bump-my-version bump $(VERSION_PART)
 .PHONY: bump
 
 help: ## Show this help
