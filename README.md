@@ -10,7 +10,7 @@ Opinionated copier template for python projects using uv
 | Testing framework      | pytest, unittest                                        |
 | Test mocking           | pytest-mock                                             |
 | Pre-commit hooks       | pre-commit                                              |
-| Version management     | bump2version                                            |
+| Version management     | bump-my-version                                         |
 | Environment management | direnv                                                  |
 | Common style           | EditorConfig                                            |
 | Editor configuration   | vscode with suggested extensions                        |
