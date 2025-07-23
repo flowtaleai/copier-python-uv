@@ -7,7 +7,6 @@ def test_bake_with_defaults(tmp_path, copier):
     project = copier.copy(tmp_path)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
-    assert ".bumpversion.cfg" in found_toplevel_files
     assert ".gitignore" in found_toplevel_files
     assert "pyproject.toml" in found_toplevel_files
     assert ".python-version" in found_toplevel_files
@@ -132,14 +131,6 @@ def test_bake_and_run_cli(tmp_path, copier):
     project.run("uv run python_boilerplate")
 
 
-@pytest.mark.venv
-def test_bake_and_bump_version(tmp_path, copier):
-    custom_answers = {"package_type": "cli"}
-    project = copier.copy(tmp_path, **custom_answers)
-
-    project.run("uv run bump2version minor")
-
-
 @pytest.mark.slow
 @pytest.mark.venv
 def test_bake_defaults_and_run_pre_commit(tmp_path, copier):
@@ -165,7 +156,7 @@ def test_bake_defaults_and_run_pre_commit(tmp_path, copier):
 
 @pytest.mark.slow
 @pytest.mark.venv
-def test_make_bump_updates_version_in_selected_files(tmp_path, copier):
+def test_bump_version_updates_files(tmp_path, copier):
     custom_answers = {"package_name": "mypackage"}
     project = copier.copy(tmp_path, **custom_answers)
 
@@ -174,7 +165,7 @@ def test_make_bump_updates_version_in_selected_files(tmp_path, copier):
     project.run("git config user.name 'User Name'")
     project.run("git config user.email 'user@email.org'")
     project.run("git commit -m init")
-    project.run("uv run bump2version major")
+    project.run("uv run bump-my-version bump major")
 
     copier_answers_path = project.path / ".copier-answers.yml"
     pyproject_path = project.path / "pyproject.toml"
