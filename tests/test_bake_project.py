@@ -137,6 +137,11 @@ def test_bake_and_bump_version(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
     project = copier.copy(tmp_path, **custom_answers)
 
+    project.run("git init")
+    project.run("git add .")
+    project.run("git config user.name 'User Name'")
+    project.run("git config user.email 'user@email.org'")
+    project.run("git commit -m init")
     project.run("uv run bump-my-version bump minor")
 
 

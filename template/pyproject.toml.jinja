@@ -150,3 +150,13 @@ pre_commit_hooks = ["uv sync", "git add uv.lock"]
 filename = "pyproject.toml"
 search = "version = \"{current_version}\""
 replace = "version = \"{new_version}\""
+
+[[tool.bumpversion.files]]
+filename = ".copier-answers.yml"
+search = "version: {current_version}"
+replace = "version: {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "src/{{ package_name | replace('.', _copier_conf.sep) }}/__init__.py"
+search = "__version__ = \"{current_version}\""
+replace = "__version__ = \"{new_version}\""
