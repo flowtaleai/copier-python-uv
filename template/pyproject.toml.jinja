@@ -7,7 +7,7 @@ license = { file = "LICENSE" }
 packages = [
   { include = "{{ package_name | replace('.', _copier_conf.sep) }}", from = "src" },
 ]
-requires-python = "~={{ python_version }}"
+requires-python = ">={{ python_version }},<4"
 dependencies = [
 {% if package_type == "cli" %}
   "typer~=0.16.0",

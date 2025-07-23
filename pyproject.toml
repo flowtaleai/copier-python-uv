@@ -14,7 +14,7 @@ authors = [
     { name = "Tobias Rehfeldt", email = "tc@flowtale.ai" },
     { name = "Vladyslav Kromkach", email = "vk@flowtale.ai" },
 ]
-requires-python = "~=3.12"
+requires-python = ">=3.12,<4"
 license = "MIT"
 dependencies = [
   "tox>=4.11.3,<5",
