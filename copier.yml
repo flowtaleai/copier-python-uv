@@ -17,7 +17,7 @@ author_email:
   type: str
   help: "Email of the author of the project"
   validator: >-
-    {% if not (author_email | regex_search('.+@.+\..+')) %}
+    {% if not (author_email | regex_search('.+@.+\\.+')) %}
     Author email must be a valid email address.
     {% endif %}
 
@@ -29,7 +29,7 @@ package_name:
     The package name can contain '.' if you are creating a namespaced package,
     but supports a maximum package nesting of three levels.
   validator: |-
-    {% if not (package_name | regex_search('^([a-z][a-z0-9_]*)+(\.[a-z][a-z0-9_]*){0,2}$')) %}
+    {% if not (package_name | regex_search('^([a-z][a-z0-9_]*)+(\\.[a-z][a-z0-9_]*){0,2}$')) %}
     package name must start with a lowercase letter and can only contain lowercase letters, numbers, or underscores.
     {% endif %}
 
@@ -43,7 +43,7 @@ distribution_name:
     Distribution name should be similar to package name but can like scikit-learn
     (sklearn) be different.
   validator: >-
-    {% if not (distribution_name | regex_search('^(?!.*\..*\..*\.)[a-z0-9]+(?:[._-][a-z0-9]+)*$')) %}
+    {% if not (distribution_name | regex_search('^(?!.*\\..*\\..*\\.)[a-z0-9]+(?:[._-][a-z0-9]+)*$')) %}
     distribution name must start with a lowercase letter and can only contain lowercase letters, numbers, dashes, underscores, or dots.
     {% endif %}
 
@@ -61,7 +61,7 @@ version:
   default: "0.0.0"
   help: "Project version"
   validator: >-
-    {% if not (version | regex_search('^\d+(\.\d+){2}$')) %}
+    {% if not (version | regex_search('^\\d+(\\.\\d+){2}$')) %}
     Version must be in the format of 'MAJOR.MINOR.PATCH', where MAJOR, MINOR, and PATCH are non-negative integers without leading zeroes, separated by dots. For example, '1.2.3'.
     {% endif %}
 
@@ -97,7 +97,7 @@ uv_version:
   default: "0.7.13"
   help: "uv version to use across all environments"
   validator: >-
-    {% if not (uv_version | regex_search('^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$')) %}
+    {% if not (uv_version | regex_search('^(?P<major>0|[1-9]\\d*)\\.(?P<minor>0|[1-9]\\d*)\\.(?P<patch>0|[1-9]\\d*)(?:-(?P<prerelease>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$')) %}
     uv version must follow semantic versioning (e.g., 1.0.0, 2.1.3-alpha, 3.0.0+build123).
     {% endif %}
 
