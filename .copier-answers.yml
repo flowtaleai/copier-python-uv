@@ -1,5 +1,5 @@
 _commit: 2.1.0
-_src_path: git@gitlab.flowtale.ai:flowtale/engineering/templates/copier-python-uv.git
+_src_path: https://github.com/flowtaleai/copier-python-uv
 author_email: mtn@flowtale.ai
 author_name: Flowtale
 distribution_name: copier-python-uv
