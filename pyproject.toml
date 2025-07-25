@@ -14,25 +14,32 @@ authors = [
     { name = "Tobias Rehfeldt", email = "tc@flowtale.ai" },
     { name = "Vladyslav Kromkach", email = "vk@flowtale.ai" },
 ]
+license = { file = "LICENSE" }
 requires-python = ">=3.12,<4"
-license = "MIT"
-dependencies = [
+
+[dependency-groups]
+dev = [
+  "pytest~=8.4",
+  "ruff~=0.11.12",
+  "pytest-mock~=3.11",
+  "black~=25.1",
+  "pre-commit~=4.2",
+  "bump-my-version>=1.2.1,<2",
+  "detect-secrets~=1.4",
+  "copier>=9.1.0,<10",
+  "pytest-copier>=0.4.1,<0.5",
   "tox>=4.11.3,<5",
   "tox-uv~=1.26.0",
 ]
 
-[dependency-groups]
-dev = [
-    "pytest>=7.4.2,<8",
-    "ruff>=0.9.7,<0.10",
-    "pytest-mock>=3.11.1,<4",
-    "black>=22.1.0,<23",
-    "pre-commit>=3.4.0,<4",
-    "bump-my-version>=1.2.1,<2",
-    "copier>=9.1.0,<10",
-    "pytest-copier>=0.4.1,<0.5",
-    "detect-secrets>=1.4.0,<2",
-]
+# This may change in the future once the `uv` build backend
+# is out of preview
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/template"]
 
 [tool.black]
 line-length = 88
