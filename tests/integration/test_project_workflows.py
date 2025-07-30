@@ -3,6 +3,7 @@ import shutil
 import pytest
 
 
+@pytest.mark.venv
 def test_bake_and_run_tests_with_pytest_framework(tmp_path, copier):
     custom_answers = {"testing_framework": "pytest"}
     project = copier.copy(tmp_path, **custom_answers)
@@ -72,6 +73,7 @@ def test_bump_version_updates_files(tmp_path, copier):
         ("mkdocs", "build/site/index.html"),
     ],
 )
+@pytest.mark.venv
 def test_bake_with_documentation(tmp_path, copier, framework, frontpage_path):
     custom_answers = {"generate_docs": framework}
     project = copier.copy(tmp_path, **custom_answers)
@@ -218,6 +220,7 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
     project.run("uv run pre-commit run --all-files")
 
 
+@pytest.mark.venv
 def test_mypy_with_mkdocs(tmp_path, copier):
     custom_answers = {
         "generate_docs": "mkdocs",
