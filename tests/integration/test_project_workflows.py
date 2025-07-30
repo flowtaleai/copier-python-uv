@@ -29,7 +29,6 @@ def test_bake_and_run_tests_with_pytest_framework(tmp_path, copier):
     project.run("pytest")
 
 
-@pytest.mark.slow
 @pytest.mark.venv
 def test_bake_and_run_cli(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
@@ -39,7 +38,6 @@ def test_bake_and_run_cli(tmp_path, copier):
     project.run("uv run python_boilerplate")
 
 
-@pytest.mark.slow
 @pytest.mark.venv
 def test_bake_defaults_and_run_pre_commit(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
@@ -52,7 +50,6 @@ def test_bake_defaults_and_run_pre_commit(tmp_path, copier):
     project.run("uv run pre-commit run --all-files")
 
 
-@pytest.mark.slow
 @pytest.mark.venv
 def test_bump_version_updates_files(tmp_path, copier):
     custom_answers = {"package_name": "mypackage"}
@@ -98,7 +95,6 @@ def test_bake_with_documentation(tmp_path, copier, framework, frontpage_path):
     assert "Usage" in front_page
 
 
-@pytest.mark.slow
 @pytest.mark.venv
 def test_bake_with_many_and_run_pre_commit(tmp_path, copier):
     custom_answers = {
@@ -121,7 +117,6 @@ def test_bake_with_many_and_run_pre_commit(tmp_path, copier):
     project.run("uv run pre-commit run --all-files")
 
 
-@pytest.mark.slow
 @pytest.mark.venv
 def test_bake_namespaced_package_with_many_and_run_pre_commit(tmp_path, copier):
     custom_answers = {
@@ -145,7 +140,6 @@ def test_bake_namespaced_package_with_many_and_run_pre_commit(tmp_path, copier):
     project.run("uv run pre-commit run --all-files")
 
 
-@pytest.mark.slow
 @pytest.mark.venv
 def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
     """Test that mypy respects exclude patterns in pyproject.toml.
