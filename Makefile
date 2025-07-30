@@ -27,9 +27,19 @@ lint:   ## Runs linting on all project files
 	uv run pre-commit run --all-files -c $$tempfile
 .PHONY: lint
 
-test:  ## Run the project tests
-	@uv run tox -r
-.PHONY: test
+test: test-unit  ## Run unit tests (fast feedback for development)
+
+test-unit:  ## Run unit tests only
+	@uv run pytest tests/unit/ -q --maxfail=1 --tb=line
+.PHONY: test-unit
+
+test-integration:  ## Run integration tests only
+	@uv run pytest tests/integration/ -q --maxfail=1 --tb=line
+.PHONY: test-integration
+
+test-all:  ## Run all tests comprehensively (replaces old tox behavior)
+	@uv run pytest -q --tb=short --run-all
+.PHONY: test test-all
 
 testproject:  ## Test the copier template by creating a new project in temporary directory
 	@mkdir -p testprojects
