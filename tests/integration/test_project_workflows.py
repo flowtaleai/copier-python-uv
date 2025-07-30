@@ -236,3 +236,22 @@ def test_mypy_with_mkdocs(tmp_path, copier):
 
     project.run("make setup-strict")
     project.run("make lint")
+
+
+@pytest.mark.venv
+def test_hadolint_integration(tmp_path, copier):
+    custom_answers = {
+        "generate_dockerfile": True,
+        "lint_dockerfile": True,
+    }
+    project = copier.copy(tmp_path, **custom_answers)
+
+    project.run("git init")
+    project.run("git add .")
+    project.run("git config user.name 'User Name'")
+    project.run("git config user.email 'user@email.org'")
+    project.run("git commit -m init")
+
+    project.run("make setup")
+    project.run("uv sync")
+    project.run("uv run pre-commit run hadolint --all-files")
