@@ -27,7 +27,7 @@ def test_validate_author_name_invalid(tmp_path, copier, author_name):
         "long-but-valid-distribution-name",
     ],
 )
-def test_validate_distribtuion_name_valid(tmp_path, copier, distribution_name):
+def test_validate_distribution_name_valid(tmp_path, copier, distribution_name):
     custom_answers = {"distribution_name": distribution_name}
     copier.copy(tmp_path, **custom_answers)
 
@@ -48,7 +48,7 @@ def test_validate_distribtuion_name_valid(tmp_path, copier, distribution_name):
         "distribution--name",
     ],
 )
-def test_validate_distribtuion_name_invalid(tmp_path, copier, distribution_name):
+def test_validate_distribution_name_invalid(tmp_path, copier, distribution_name):
     custom_answers = {"distribution_name": distribution_name}
     with pytest.raises(
         ValueError,
