@@ -28,7 +28,7 @@ lint:   ## Runs linting on all project files
 .PHONY: lint
 
 test: test-unit  ## Shorthand for running unit tests
-  @uv run pytest tests/unit/
+	@uv run pytest tests/unit/
 
 test-unit:  ## Run unit tests only
 	@uv run pytest tests/unit/

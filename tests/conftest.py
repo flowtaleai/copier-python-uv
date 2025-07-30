@@ -43,17 +43,20 @@ def copier_defaults() -> dict[str, str]:
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--run-all", action="store_true", default=False, help="run all tests."
+        "--include-venv",
+        action="store_true",
+        default=False,
+        help="Include tests that may modify the virtual environment",
     )
 
 
 def pytest_collection_modifyitems(config, items):
-    if config.getoption("--run-all"):
+    if config.getoption("--include-venv"):
         return
     skip_venv = pytest.mark.skip(
         reason=(
             "Might interfere with the virtual environment. Should be run with tox. Use"
-            " --run-all option to force run it."
+            " --include-venv option to force run it."
         )
     )
     for item in items:
