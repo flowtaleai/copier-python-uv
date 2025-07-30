@@ -27,17 +27,18 @@ lint:   ## Runs linting on all project files
 	uv run pre-commit run --all-files -c $$tempfile
 .PHONY: lint
 
-test: test-unit  ## Run unit tests (fast feedback for development)
+test: test-unit  ## Shorthand for running unit tests
+  @uv run pytest tests/unit/
 
 test-unit:  ## Run unit tests only
-	@uv run pytest tests/unit/ -q --maxfail=1 --tb=line
+	@uv run pytest tests/unit/
 .PHONY: test-unit
 
 test-integration:  ## Run integration tests only (uses tox for isolation)
 	@uv run tox -e integration
 .PHONY: test-integration
 
-test-all:  ## Run all tests comprehensively (uses tox)
+test-all:  ## Run all tests comprehensively (uses tox for isolation)
 	@uv run tox -r
 .PHONY: test test-all
 
