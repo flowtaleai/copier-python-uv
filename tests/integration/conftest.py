@@ -1,4 +1,4 @@
-"""Shared fixtures and helpers for integration tests."""
+"""Shared helpers for integration tests."""
 
 
 def setup_git_repo(project):
