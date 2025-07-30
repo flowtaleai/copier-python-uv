@@ -9,11 +9,10 @@ from .conftest import setup_git_repo, setup_precommit_strict
 def test_bake_defaults_and_run_pre_commit(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
     project = copier.copy(tmp_path, **custom_answers)
-
     setup_git_repo(project)
     setup_precommit_strict(project)
-
     project.run("uv sync")
+
     project.run("uv run pre-commit run --all-files")
 
 
@@ -31,11 +30,10 @@ def test_bake_with_many_and_run_pre_commit(tmp_path, copier):
         "package_type": "cli",
     }
     project = copier.copy(tmp_path, **custom_answers)
-
     setup_git_repo(project)
     setup_precommit_strict(project)
-
     project.run("uv sync")
+
     project.run("uv run pre-commit run --all-files")
 
 
@@ -54,11 +52,10 @@ def test_bake_namespaced_package_with_many_and_run_pre_commit(tmp_path, copier):
         "package_type": "cli",
     }
     project = copier.copy(tmp_path, **custom_answers)
-
     setup_git_repo(project)
     setup_precommit_strict(project)
-
     project.run("uv sync")
+
     project.run("uv run pre-commit run --all-files")
 
 
@@ -72,14 +69,10 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
     custom_answers = {
         "type_checker": "mypy",
         "type_checker_strictness": "strict",
-        "package_name": "mypackage",  # Specify a fixed package name
+        "package_name": "mypackage",
     }
-
     project = copier.copy(tmp_path, **custom_answers)
-
     setup_git_repo(project)
-
-    # Create a file with type errors in src directory
     src_dir = project.path / "src" / "mypackage"
     src_file_with_error = src_dir / "exclude_me.py"
     src_file_with_error.write_text(
@@ -87,8 +80,6 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
         '    """Add random docstring here to avoid pre-commit error."""\n'
         "    return 999  # Type error: Incompatible return value\n"
     )
-
-    # Modify pyproject.toml to exclude the specific file
     pyproject_path = project.path / "pyproject.toml"
     pyproject_content = pyproject_path.read_text()
     src_exclude_path = "src/mypackage/exclude_me.py"
@@ -97,15 +88,12 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
         f'exclude = ["tests/*", "{src_exclude_path}"]',
     )
     pyproject_path.write_text(updated_content)
-
-    # Stage and commit the new file and changes
     project.run(f"git add {src_exclude_path} pyproject.toml")
     project.run(
         "git commit -m 'Add file with type errors in src directory and update mypy"
         " excludes'"
     )
-
     setup_precommit_strict(project)
-
     project.run("uv sync")
+
     project.run("uv run pre-commit run --all-files")

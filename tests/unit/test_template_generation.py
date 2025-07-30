@@ -13,18 +13,16 @@ def test_bake_with_defaults(tmp_path, copier):
     assert "LICENSE" in found_toplevel_files
     assert ".gitattributes" in found_toplevel_files
     assert "tests" in found_toplevel_files
-
     assert ".vscode" in found_toplevel_files
-
     assert ".gitlab-ci.yml" not in found_toplevel_files
     assert "Pipfile" not in found_toplevel_files
-
     assert (project.path / "src" / "python_boilerplate").exists()
     assert not (project.path / "docs").exists()
 
 
 def test_bake_and_run_tests_with_unittest_framework(tmp_path, copier):
     custom_answers = {"testing_framework": "unittest"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
@@ -34,6 +32,7 @@ def test_bake_and_run_tests_with_unittest_framework(tmp_path, copier):
 
 def test_bake_with_proprietary_license(tmp_path, copier):
     custom_answers = {"license": "Proprietary"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
@@ -42,12 +41,14 @@ def test_bake_with_proprietary_license(tmp_path, copier):
 
 def test_bake_with_invalid_package_name(tmp_path, copier):
     custom_answers = {"package_name": "1invalid"}
+
     with pytest.raises(ValueError, match="Validation error for question"):
         copier.copy(tmp_path, **custom_answers)
 
 
 def test_bake_cli_application(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     found_cli_script = [f.name for f in project.path.glob("**/cli.py")]
@@ -56,6 +57,7 @@ def test_bake_cli_application(tmp_path, copier):
 
 def test_bake_library(tmp_path, copier):
     custom_answers = {"package_type": "library"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     found_cli_script = [f.name for f in project.path.glob("**/cli.py")]
@@ -67,9 +69,10 @@ def test_bake_namespaced_library(tmp_path, copier):
         "package_type": "library",
         "package_name": "flowtale.copier.template",
     }
-    project = copier.copy(tmp_path, **custom_answers)
-    package_path = project.path / "src"
 
+    project = copier.copy(tmp_path, **custom_answers)
+
+    package_path = project.path / "src"
     assert list(package_path.iterdir())[0].name == "flowtale"
     assert list((package_path / "flowtale").iterdir())[0].name == "copier"
     assert list((package_path / "flowtale" / "copier").iterdir())[0].name == "template"
@@ -77,6 +80,7 @@ def test_bake_namespaced_library(tmp_path, copier):
 
 def test_bake_app_and_check_cli_scripts(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     assert project.path.is_dir()
@@ -87,6 +91,7 @@ def test_bake_app_and_check_cli_scripts(tmp_path, copier):
 
 def test_bake_gitlab(tmp_path, copier):
     custom_answers = {"git_hosting": "gitlab"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
@@ -96,6 +101,7 @@ def test_bake_gitlab(tmp_path, copier):
 
 def test_bake_github(tmp_path, copier):
     custom_answers = {"git_hosting": "github"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     found_toplevel_files = [f.name for f in project.path.glob("*")]
@@ -106,6 +112,7 @@ def test_bake_github(tmp_path, copier):
 
 def test_bake_gitlab_and_unittest(tmp_path, copier):
     custom_answers = {"git_hosting": "gitlab", "testing_framework": "unittest"}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     gitlab_ci_path = project.path / ".gitlab-ci.yml"
@@ -117,6 +124,7 @@ def test_bake_with_code_examples(tmp_path, copier):
         "use_jupyter_notebooks": True,
         "generate_example_code": True,
     }
+
     project = copier.copy(tmp_path, **custom_answers)
 
     package_name = project.answers["package_name"]
@@ -133,7 +141,6 @@ def test_bake_with_code_examples(tmp_path, copier):
     jupyter_notebook_example_path = (
         project.path / "notebooks" / "example_notebook.ipynb"
     )
-
     assert main_module_example_path.exists() is True
     assert main_module_test_example_path.exists() is True
     assert jupyter_notebook_example_path.exists() is True
@@ -141,6 +148,7 @@ def test_bake_with_code_examples(tmp_path, copier):
 
 def test_bake_without_code_examples(tmp_path, copier):
     custom_answers = {"use_jupyter_notebooks": True, "generate_example_code": False}
+
     project = copier.copy(tmp_path, **custom_answers)
 
     package_name = project.answers["package_name"]
@@ -174,6 +182,7 @@ def test_bake_with_many_files(tmp_path, copier):
         "ide": "vscode",
         "package_type": "cli",
     }
+
     project = copier.copy(tmp_path, **custom_answers)
 
     package_name = project.answers["package_name"]
@@ -187,16 +196,12 @@ def test_bake_with_many_files(tmp_path, copier):
     main_module_test_example_path = (
         project.path / "tests" / f"test_{package_test_name}.py"
     )
-    # Jupyter
     jupyter_notebook_example_path = (
         project.path / "notebooks" / "example_notebook.ipynb"
     )
-    # Docs
     mkdocs_config_filepath = project.path / "mkdocs.yml"
     mkdocs_dir_path = project.path / "docs"
-    # Dockerfile
     dockerfile_path = project.path / "Dockerfile"
-
     assert main_module_example_path.exists() is True
     assert main_module_test_example_path.exists() is True
     assert jupyter_notebook_example_path.exists() is True
@@ -218,6 +223,7 @@ def test_bake_namespaced_package_with_many_files(tmp_path, copier):
         "ide": "vscode",
         "package_type": "cli",
     }
+
     project = copier.copy(tmp_path, **custom_answers)
 
     package_name = project.answers["package_name"]
@@ -231,16 +237,12 @@ def test_bake_namespaced_package_with_many_files(tmp_path, copier):
     main_module_test_example_path = (
         project.path / "tests" / f"test_{package_test_name}.py"
     )
-    # Jupyter
     jupyter_notebook_example_path = (
         project.path / "notebooks" / "example_notebook.ipynb"
     )
-    # Docs
     mkdocs_config_filepath = project.path / "mkdocs.yml"
     mkdocs_dir_path = project.path / "docs"
-    # Dockerfile
     dockerfile_path = project.path / "Dockerfile"
-
     assert main_module_example_path.exists() is True
     assert main_module_test_example_path.exists() is True
     assert jupyter_notebook_example_path.exists() is True
@@ -256,25 +258,19 @@ def test_uv_version_consistency(tmp_path, copier, git_hosting):
         "generate_dockerfile": True,
         "git_hosting": git_hosting,
     }
+
     project = copier.copy(tmp_path, **custom_answers)
 
-    # Check Dockerfile
     dockerfile_path = project.path / "Dockerfile"
     assert "uv:0.7.13" in dockerfile_path.read_text()
-
-    # Check CI files
     if git_hosting == "github":
         ci_path = project.path / ".github" / "workflows" / "ci.yml"
         assert 'UV_VERSION: "0.7.13"' in ci_path.read_text()
     elif git_hosting == "gitlab":
         ci_path = project.path / ".gitlab-ci.yml"
         assert "pip install uv==0.7.13" in ci_path.read_text()
-
-    # Check CONTRIBUTING.md
     contributing_path = project.path / "CONTRIBUTING.md"
     assert "uv" in contributing_path.read_text()
-
-    # Check devcontainer
     devcontainer_path = project.path / ".devcontainer" / "devcontainer.json"
     assert 'uv:1": {"version": "0.7.13" }' in devcontainer_path.read_text()
 
@@ -284,11 +280,11 @@ def test_with_hadolint_config_generation(tmp_path, copier):
         "generate_dockerfile": True,
         "lint_dockerfile": True,
     }
+
     project = copier.copy(tmp_path, **custom_answers)
 
     pre_commit_path = project.path / ".pre-commit-config.standard.yaml"
     pyproject_path = project.path / "pyproject.toml"
-
     assert "hadolint" in pre_commit_path.read_text()
     assert "hadolint" in pyproject_path.read_text()
 
@@ -297,10 +293,10 @@ def test_without_hadolint(tmp_path, copier):
     custom_answers = {
         "lint_dockerfile": False,
     }
+
     project = copier.copy(tmp_path, **custom_answers)
 
     pre_commit_path = project.path / ".pre-commit-config.standard.yaml"
     pyproject_path = project.path / "pyproject.toml"
-
     assert "hadolint" not in pre_commit_path.read_text()
     assert "hadolint" not in pyproject_path.read_text()

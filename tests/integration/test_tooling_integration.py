@@ -19,16 +19,13 @@ class TestDocumentationGeneration:
     def test_bake_with_documentation(self, tmp_path, copier, framework, frontpage_path):
         custom_answers = {"generate_docs": framework}
         project = copier.copy(tmp_path, **custom_answers)
-
         setup_git_repo(project)
         project.run("make setup")
+
         project.run("make docs")
 
-        # Check that index.html exists
         frontpage_path = project.path / frontpage_path
         assert frontpage_path.exists()
-
-        # Check that readme is displayed on frontpage
         title = project.answers["package_name"] or project.answers["distribution_name"]
         with open(frontpage_path) as index:
             front_page = "\n".join(index.readlines())
@@ -46,10 +43,9 @@ class TestTypeChecking:
             "type_checker": "mypy",
         }
         project = copier.copy(tmp_path, **custom_answers)
-
         setup_git_repo(project)
-
         project.run("make setup-strict")
+
         project.run("make lint")
 
 
@@ -63,10 +59,9 @@ class TestDockerLinting:
             "lint_dockerfile": True,
         }
         project = copier.copy(tmp_path, **custom_answers)
-
         setup_git_repo(project)
-
         project.run("make setup")
+
         project.run("uv run pre-commit run hadolint --all-files")
 
 
@@ -77,14 +72,13 @@ class TestVersionManagement:
     def test_bump_version_updates_files(self, tmp_path, copier):
         custom_answers = {"package_name": "mypackage"}
         project = copier.copy(tmp_path, **custom_answers)
-
         setup_git_repo(project)
+
         project.run("uv run bump-my-version bump major")
 
         copier_answers_path = project.path / ".copier-answers.yml"
         pyproject_path = project.path / "pyproject.toml"
         project_init = project.path / "src" / "mypackage" / "__init__.py"
-
         assert "1.0.0" in copier_answers_path.read_text()
         assert "1.0.0" in pyproject_path.read_text()
         assert "1.0.0" in project_init.read_text()
