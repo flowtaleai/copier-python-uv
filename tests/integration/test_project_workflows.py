@@ -220,5 +220,4 @@ def test_hadolint_integration(tmp_path, copier):
     setup_git_repo(project)
 
     project.run("make setup")
-    project.run("uv sync")
     project.run("uv run pre-commit run hadolint --all-files")
