@@ -33,12 +33,12 @@ test-unit:  ## Run unit tests only
 	@uv run pytest tests/unit/ -q --maxfail=1 --tb=line
 .PHONY: test-unit
 
-test-integration:  ## Run integration tests only
-	@uv run pytest tests/integration/ -q --maxfail=1 --tb=line
+test-integration:  ## Run integration tests only (uses tox for isolation)
+	@uv run tox -e integration
 .PHONY: test-integration
 
-test-all:  ## Run all tests comprehensively (replaces old tox behavior)
-	@uv run pytest -q --tb=short --run-all
+test-all:  ## Run all tests comprehensively (uses tox)
+	@uv run tox -r
 .PHONY: test test-all
 
 testproject:  ## Test the copier template by creating a new project in temporary directory
