@@ -35,11 +35,11 @@ test-unit:  ## Run unit tests only
 .PHONY: test-unit
 
 test-integration:  ## Run integration tests only
-	@uv run tox -e integration
+	@uv run tox -re integration
 .PHONY: test-integration
 
 test-all:  ## Run all tests
-	@uv run tox -e all
+	@uv run tox -re all
 .PHONY: test test-all
 
 testproject:  ## Test the copier template by creating a new project in temporary directory
