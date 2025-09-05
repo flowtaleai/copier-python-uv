@@ -108,6 +108,5 @@ replace = "version = \"{new_version}\""
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
-    "slow: slow tests",
     "venv: tests that modify the virtual environment possibly causing interferences; should be run with tox",
 ]

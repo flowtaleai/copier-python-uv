@@ -29,17 +29,32 @@ There are multiple approaches for testing the template to ensure it works correc
 
 #### Running Template Tests
 
-To run the automated test suite for the template:
+To run the automated test suite for the template, you have several options:
 
 ```bash
+# Run unit tests only (fast feedback for development)
 make test
+
+# Run integration tests only (isolated environment using tox)
+make test-integration
+
+# Run all tests with unified pytest report
+make test-all
 ```
 
-This runs tests using tox. If you encounter environment-related issues, you can recreate the environments:
+The template tests are organized into:
+- **Unit tests** (`tests/unit/`) - Fast tests for template generation logic and validation
+- **Integration tests** (`tests/integration/`) - Tests that run external tools and modify environments
 
-```bash
-uv run tox -r
-```
+#### Pytest Markers
+
+The test suite uses specific pytest markers to categorize tests by their environmental impact:
+
+- **`@pytest.mark.venv`** - Applied to tests that install project dependencies or modify the virtual environment. These tests require isolated execution via tox to prevent interference with the development environment. Without the `--include-venv` flag, these tests are automatically skipped with a clear explanation.
+
+All integration tests that perform `uv sync`, `pip install`, or similar package management operations should use this marker to ensure proper test isolation and prevent conflicts with the active development environment.
+
+For development, use `make test` for quick feedback. Use `make test-integration` or `make test-all` for comprehensive testing before submitting changes.
 
 #### Generating Test Projects
 
