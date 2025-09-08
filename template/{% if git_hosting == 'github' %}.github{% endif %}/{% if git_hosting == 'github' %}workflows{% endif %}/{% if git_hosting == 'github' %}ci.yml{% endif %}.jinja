@@ -27,12 +27,7 @@ jobs:
           make setup-strict
       - name: Test with pytest
         run: |
-          {% if testing_framework == "pytest" %}
           uv run pytest
-          {% endif %}
-          {% if testing_framework == "unittest" %}
-          uv run python -m unittest discover
-          {% endif %}
 
   lint:
     runs-on: ubuntu-24.04

@@ -20,15 +20,6 @@ def test_bake_with_defaults(tmp_path, copier):
     assert not (project.path / "docs").exists()
 
 
-def test_bake_and_run_tests_with_unittest_framework(tmp_path, copier):
-    custom_answers = {"testing_framework": "unittest"}
-
-    project = copier.copy(tmp_path, **custom_answers)
-
-    found_toplevel_files = [f.name for f in project.path.glob("*")]
-    assert ".vscode" in found_toplevel_files
-    assert ".idea" not in found_toplevel_files
-
 
 def test_bake_with_proprietary_license(tmp_path, copier):
     custom_answers = {"license": "Proprietary"}
@@ -109,14 +100,6 @@ def test_bake_github(tmp_path, copier):
     github_workflow_path = project.path / ".github/workflows/ci.yml"
     assert github_workflow_path.exists()
 
-
-def test_bake_gitlab_and_unittest(tmp_path, copier):
-    custom_answers = {"git_hosting": "gitlab", "testing_framework": "unittest"}
-
-    project = copier.copy(tmp_path, **custom_answers)
-
-    gitlab_ci_path = project.path / ".gitlab-ci.yml"
-    assert "uv run python -m unittest discover" in gitlab_ci_path.read_text()
 
 
 def test_bake_with_code_examples(tmp_path, copier):
