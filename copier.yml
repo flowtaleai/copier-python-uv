@@ -3,6 +3,9 @@ _envops:
   lstrip_blocks: true
   trim_blocks: true
   keep_trailing_newline: true
+_skip_if_exists:
+  - README.md
+  - LICENSE
 
 # ====== QUESTIONS ======
 author_name:
