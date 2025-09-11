@@ -1,4 +1,3 @@
-# tests/integration/test_copier_update.py
 import shutil
 import subprocess
 from pathlib import Path
