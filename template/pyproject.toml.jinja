@@ -9,14 +9,14 @@ packages = [
 ]
 requires-python = ">={{ python_version }},<4"
 
-[tool.uv]
-add-bounds = "major"
-
 dependencies = [
 {% if package_type == "cli" %}
   "typer>=0.16.0,<1.0.0",
 {% endif %}
 ]
+
+[tool.uv]
+add-bounds = "major"
 
 [dependency-groups]
 dev=[
