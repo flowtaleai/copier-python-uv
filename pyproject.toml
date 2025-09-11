@@ -48,18 +48,18 @@ only-include = ["README.md", "LICENSE"]
 [tool.black]
 line-length = 88
 preview = true
-target-version = "py312"
+target-version = ["py312"]
 extend-exclude = "template/"
 
 [tool.ruff]
 line-length = 88
 target-version = "py312"
 force-exclude = true
+fix = true
+show-fixes = true
 exclude = ["template"]
 
 [tool.ruff.lint]
-fix = true
-show-fixes = true
 select = [
     "E", # pycodestyle, basic flake8
     "W", # pycodestyle, basic flake8
