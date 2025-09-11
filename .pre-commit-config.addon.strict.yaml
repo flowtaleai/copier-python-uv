@@ -10,19 +10,13 @@
     hooks:
       - id: black
         name: Format files with black
-        exclude: "template"
         language: system
-        entry: uv run black --preview
+        entry: uv run black
         require_serial: true
         types_or: [python, pyi]
       - id: ruff-lint
         name: Lint files with ruff
-        exclude: "template"
         entry: uv run ruff check
         language: system
         require_serial: true
         types_or: [python, pyi, jupyter]
-        args:
-          - --fix
-          - --show-fixes
-          - --force-exclude
