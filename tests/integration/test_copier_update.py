@@ -17,46 +17,27 @@ def data_args(answers: dict) -> list[str]:
         out += ["--data", f"{k}={v}"]
     return out
 
-def test_readme_respects_skip_if_exists_with_update(tmp_path: Path):
-    # --- make a mutable copy of YOUR template ---
+def test_readme_respects_skip_if_exists_with_update(tmp_path: Path, copier_defaults):
     repo_root = Path(__file__).resolve().parents[2]
     tpl = tmp_path / "tpl"
     tpl.mkdir(parents=True, exist_ok=True)
     shutil.copytree(repo_root / "template", tpl / "template")
     shutil.copy2(repo_root / "copier.yml", tpl / "copier.yml")
 
-    # Ensure answers get written so `copier update` can find _src/_commit
-    cfg = yaml.safe_load((tpl / "copier.yml").read_text(encoding="utf-8")) or {}
-    if "_answers_file" not in cfg:
-        cfg["_answers_file"] = ".copier-answers.yml"
-        (tpl / "copier.yml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
+    cfg_path = tpl / "copier.yml"
+    cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8")) or {}
+    cfg.setdefault("_answers_file", ".copier-answers.yml")
+    cfg_path.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
-    readme_is_skipped = "README.md" in set(cfg.get("_skip_if_exists", []) or [])
+    skip_list = set(cfg.get("_skip_if_exists", []) or [])
 
-    # Non-interactive answers for your template (adjust if you add required questions)
-    answers = {
-        "author_email": "user@example.com",
-        "author_name": "The User",
-        "distribution_name": "python-boilerplate",
-        "package_name": "python_boilerplate",
-        "project_name": "Python Boilerplate",
-        "project_short_description": "An very nice project",
-        "license": "MIT license",
-        "package_type": "cli",
-        "type_checker": "none",
-        "type_checker_strictness": "strict",
-    }
-    dargs = data_args(answers)
-    #dargs = copier_defaults()
-
-    # Make the TEMPLATE a git repo so _commit is recorded
+    dargs = data_args(copier_defaults)
     sh(tpl, "git", "init")
     sh(tpl, "git", "config", "user.email", "test@example.com")
     sh(tpl, "git", "config", "user.name", "Test User")
     sh(tpl, "git", "add", "-A")
     sh(tpl, "git", "commit", "-m", "v1")
 
-    # --- initial bake with answers file so update has state ---
     dest = tmp_path / "proj"
     sh(
         tmp_path,
@@ -67,29 +48,44 @@ def test_readme_respects_skip_if_exists_with_update(tmp_path: Path):
         str(tpl), str(dest),
     )
 
-    # IMPORTANT: make the DESTINATION a git repo before update
+    # Destination must be git-tracked for `copier update`
     sh(dest, "git", "init")
     sh(dest, "git", "config", "user.email", "test@example.com")
     sh(dest, "git", "config", "user.name", "Test User")
     sh(dest, "git", "add", "-A")
     sh(dest, "git", "commit", "-m", "initial bake")
 
+    # Paths & snapshots
     readme = dest / "README.md"
-    before = readme.read_text(encoding="utf-8")
+    readme_before = readme.read_text(encoding="utf-8")
 
-    # Change TEMPLATE README so update would alter it (if not skipped)
-    marker = "### READMESKIPTEST_V2_MARKER"
-    (tpl / "template" / "README.md.jinja").write_text(marker + "\n", encoding="utf-8")
+    control_name = "Makefile" # Should be updated
+    control_path = dest / control_name
+    assert control_path.exists(), f"{control_name} not generated in dest"
+    control_before = control_path.read_text(encoding="utf-8")
+
+    readme_marker = "### READMESKIPTEST_V2_MARKER"
+    (tpl / "template" / "README.md.jinja").write_text(readme_marker + "\n", encoding="utf-8")
+
+    control_marker = "### CONTROL_V2_MARKER"
+    control_tpl_jinja = tpl / "template" / f"{control_name}.jinja"
+    control_tpl_raw = tpl / "template" / control_name
+    if control_tpl_jinja.exists():
+        control_tpl_jinja.write_text(control_marker + "\n", encoding="utf-8")
+    elif control_tpl_raw.exists():
+        control_tpl_raw.write_text(control_marker + "\n", encoding="utf-8")
+    else:
+        raise AssertionError(f"Template source for {control_name} not found in template/")
+
     sh(tpl, "git", "add", "-A")
-    sh(tpl, "git", "commit", "-m", "v2")
+    sh(tpl, "git", "commit", "-m", "v2: change README and control file")
 
-    # --- run copier update in the baked project ---
     sh(dest, "copier", "update", "--defaults", *dargs)
-    after = readme.read_text(encoding="utf-8")
 
-    #if readme_is_skipped:
-    assert after == before, "README.md changed even though it's in _skip_if_exists"
-    assert marker not in after, "Marker found; README.md should have been skipped"
-    # else:
-    #     assert after != before, "README.md did not change but it's NOT in _skip_if_exists"
-    #     assert after.startswith(marker), "README.md didn't pick up new template content"
+    readme_after = readme.read_text(encoding="utf-8")
+    assert readme_after == readme_before, "README.md changed even though it's in _skip_if_exists"
+    assert readme_marker not in readme_after, "Marker found; README.md should have been skipped"
+
+    control_after = control_path.read_text(encoding="utf-8")
+    assert control_after != control_before, f"{control_name} did not change but it is NOT in _skip_if_exists"
+    assert control_marker in control_after, f"{control_name} did not pick up new template content"
