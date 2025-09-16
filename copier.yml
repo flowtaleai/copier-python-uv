@@ -136,6 +136,17 @@ use_lint_strict_rules:
   default: true
   help: "Include linter strict checks that makes code cleaner and safer but require more coding skills"
 
+select_linting_components:
+  type: bool
+  default: false
+  help: "Select which linting components to enable/disable individually"
+
+enable_docstring_linting:
+  type: bool
+  default: true
+  when: "{{ select_linting_components == true }}"
+  help: "Enable docstring linting (pydocstyle rules via ruff)"
+
 ide:
   choices:
     - none
