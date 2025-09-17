@@ -248,6 +248,8 @@ Please follow the Pull Request Management Best Practices outlined in our interna
 
 **Review order**: First request review from another sprint team member, then notify the product owner for final review after initial approval.
 
+When changing tools (ruff, black, etc) settings It is also important to provide links to the relevant documentation of the specific setting and to describe the motivation of the changes in the Pull Request description.
+
 ### Code Style
 
 - Follow the style conventions evident in the existing template files
