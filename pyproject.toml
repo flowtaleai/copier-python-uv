@@ -49,11 +49,9 @@ only-include = ["README.md", "LICENSE"]
 line-length = 88
 preview = true
 enable-unstable-feature = ["string_processing"]
-target-version = ["py312"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py312"
 fix = true
 show-fixes = true
 force-exclude = true
