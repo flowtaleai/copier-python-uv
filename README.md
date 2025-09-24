@@ -146,7 +146,7 @@ Strict checks:
 See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute to this project.
 
 ## Rationale
-- [2025-09-23] We have chosen to use `major` as the default versioning strategy for package control as this is the closest to the old poetry setup of `~`. This will ensure that for non-released packages (<1.0.0) it will only do patch updates, and for released packages it will keep it at the same major version (e.g. >12.0.0,<13.0.0). This is the safest option to avoid breaking changes when updating dependencies.
+- [2025-09-23] We have chosen to use `major` as the default versioning strategy for package control as this is the closest to the old poetry setup of `^`. This will ensure that for non-released packages (<1.0.0) it will only do patch updates, and for released packages it will keep it at the same major version (e.g. >12.0.0,<13.0.0). This is the safest option to avoid breaking changes when updating dependencies.
 
 - [2025-06-18] We have chosen to switch from poetry to uv:
   - uv is now both our python version manager and package manager
