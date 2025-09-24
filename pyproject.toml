@@ -47,6 +47,7 @@ only-include = ["README.md", "LICENSE"]
 
 [tool.black]
 line-length = 88
+preview = true
 enable-unstable-feature = ["string_processing"]
 target-version = ["py312"]
 
