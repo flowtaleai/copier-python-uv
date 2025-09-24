@@ -1,76 +1,91 @@
 from __future__ import annotations
 
 import subprocess
-
-import yaml
+from pathlib import Path
 
 from .conftest import setup_git_repo
 
 
-def test_skip_if_exists_respected_on_update(
-    tmp_path,
-    copier,
-    copier_defaults,
-    template_git_repo,
-    ensure_clean_git,
-):
-    """README stays untouched on update while LICENSE picks up template changes."""
+def test_skip_if_exists_preserves_readme_on_update(tmp_path, copier):
+    """README stays untouched while LICENSE picks up template changes."""
 
-    project = copier.copy(
-        tmp_path,
-        _src_path=str(template_git_repo),
-        **copier_defaults,
-    )
-
+    project = copier.copy(tmp_path)
     setup_git_repo(project)
-    ensure_clean_git(project, "test: baseline snapshot")
 
     readme_path = project.path / "README.md"
     license_path = project.path / "LICENSE"
 
-    readme_before = readme_path.read_text(encoding="utf-8")
-    license_before = license_path.read_text(encoding="utf-8")
+    original_license_content = license_path.read_text()
 
-    readme_marker = "### README_SKIP_IF_EXISTS_MARKER"
-    readme_tpl_path = template_git_repo / "template" / "README.md.jinja"
-    readme_tpl_path.write_text(
-        readme_tpl_path.read_text(encoding="utf-8") + "\n" + readme_marker + "\n",
-        encoding="utf-8",
-    )
+    user_managed_readme = "User-managed README content\n"
+    readme_path.write_text(user_managed_readme)
+    project.run("git add README.md")
+    project.run("git commit -m 'Customize README'")
 
-    license_marker = "### LICENSE_SHOULD_UPDATE_MARKER"
-    license_tpl_path = (
-        template_git_repo
-        / "template"
-        / "{% if license != 'Proprietary' %}LICENSE{% endif %}.jinja"
+    template_root = Path(copier.template)
+    template_subdir = template_root / "template"
+    template_repo = template_root
+    original_template_commit = (
+        subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=template_repo)
+        .decode()
+        .strip()
     )
-    license_tpl_path.write_text(
-        license_tpl_path.read_text(encoding="utf-8") + "\n" + license_marker + "\n",
-        encoding="utf-8",
-    )
+    template_readme_path = template_subdir / "README.md.jinja"
+    license_template_name = "{% if license != 'Proprietary' %}LICENSE{% endif %}.jinja"
+    template_license_path = template_subdir / license_template_name
 
-    subprocess.run(["git", "add", "-A"], cwd=template_git_repo, check=True, text=True)
+    template_readme_content = template_readme_path.read_text()
+    template_license_content = template_license_path.read_text()
+
+    readme_template_marker = "\n<!-- Template README change marker -->\n"
+    license_template_marker = "\nUpdated LICENSE template marker\n"
+
+    rel_template_readme = template_readme_path.relative_to(template_repo).as_posix()
+    rel_template_license = template_license_path.relative_to(template_repo).as_posix()
+
     subprocess.run(
-        ["git", "commit", "-m", "test: mutate README and LICENSE"],
-        cwd=template_git_repo,
+        ["git", "config", "user.name", "Template User"],
+        cwd=template_repo,
         check=True,
-        text=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.email", "template@example.com"],
+        cwd=template_repo,
+        check=True,
     )
 
-    answers_path = project.path / ".copier-answers.yml"
-    answers = yaml.safe_load(answers_path.read_text(encoding="utf-8")) or {}
-    answers["_src_path"] = str(template_git_repo)
-    answers.pop("_commit", None)
-    answers.pop("_src_url", None)
-    answers_path.write_text(yaml.safe_dump(answers, sort_keys=False), encoding="utf-8")
-    ensure_clean_git(project, "test: answers point to HEAD")
+    try:
+        template_readme_path.write_text(
+            template_readme_content + readme_template_marker
+        )
+        template_license_path.write_text(
+            template_license_content + license_template_marker
+        )
 
-    project.run("copier recopy --defaults --force -r HEAD")
+        subprocess.run(
+            ["git", "add", rel_template_readme, rel_template_license],
+            cwd=template_repo,
+            check=True,
+        )
+        subprocess.run(
+            ["git", "commit", "-m", "Apply template marker for tests"],
+            cwd=template_repo,
+            check=True,
+        )
 
-    readme_after = readme_path.read_text(encoding="utf-8")
-    assert readme_after == readme_before
-    assert readme_marker not in readme_after
+        project.run("copier update --defaults --vcs-ref HEAD")
 
-    license_after = license_path.read_text(encoding="utf-8")
-    assert license_after != license_before
-    assert license_marker in license_after
+        updated_readme = readme_path.read_text()
+        updated_license = license_path.read_text()
+    finally:
+        subprocess.run(
+            ["git", "reset", "--hard", original_template_commit],
+            cwd=template_repo,
+            check=True,
+        )
+
+    assert updated_readme == user_managed_readme
+    assert readme_template_marker not in updated_readme
+
+    assert updated_license != original_license_content
+    assert license_template_marker in updated_license
