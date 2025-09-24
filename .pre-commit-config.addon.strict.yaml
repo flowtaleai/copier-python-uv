@@ -10,6 +10,7 @@
     hooks:
       - id: black
         name: Format files with black
+        exclude: "template"
         language: system
         entry: uv run black
         require_serial: true

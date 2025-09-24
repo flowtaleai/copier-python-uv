@@ -47,16 +47,15 @@ only-include = ["README.md", "LICENSE"]
 
 [tool.black]
 line-length = 88
-preview = true
+enable-unstable-feature = ["string_processing"]
 target-version = ["py312"]
-extend-exclude = "template/"
 
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-force-exclude = true
 fix = true
 show-fixes = true
+force-exclude = true
 exclude = ["template"]
 
 [tool.ruff.lint]
