@@ -7,13 +7,9 @@ build:
     uv build --wheel
 
 # Bump the project version and create a tag
-bump VERSION_PART="":
+bump:
     #!/usr/bin/env bash
-    if [ -z "{{VERSION_PART}}" ]; then
-        read -p "Version part [major, minor, patch]: " version_part
-    else
-        version_part="{{VERSION_PART}}"
-    fi
+    read -p "Version part [major, minor, patch]: " version_part
     uv run bump-my-version bump $version_part
 
 # Setup the development environment
