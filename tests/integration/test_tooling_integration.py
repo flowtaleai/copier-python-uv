@@ -20,9 +20,9 @@ class TestDocumentationGeneration:
         custom_answers = {"generate_docs": framework}
         project = copier.copy(tmp_path, **custom_answers)
         setup_git_repo(project)
-        project.run("make setup")
+        project.run("just setup")
 
-        project.run("make docs")
+        project.run("just docs")
 
         frontpage_path = project.path / frontpage_path
         assert frontpage_path.exists()
@@ -44,9 +44,9 @@ class TestTypeChecking:
         }
         project = copier.copy(tmp_path, **custom_answers)
         setup_git_repo(project)
-        project.run("make setup-strict")
+        project.run("just setup-strict")
 
-        project.run("make lint")
+        project.run("just lint")
 
 
 class TestDockerLinting:
@@ -60,7 +60,7 @@ class TestDockerLinting:
         }
         project = copier.copy(tmp_path, **custom_answers)
         setup_git_repo(project)
-        project.run("make setup")
+        project.run("just setup")
 
         project.run("uv run pre-commit run hadolint --all-files")
 
