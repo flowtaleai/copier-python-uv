@@ -34,8 +34,8 @@ lint:
 # Run the project tests
 test:
     uv run pytest
-
 {% if generate_docs == "mkdocs" %}
+
 # Build documentation
 docs:
     uv run mkdocs build --site-dir build/site
@@ -44,8 +44,8 @@ docs:
 serve-docs:
     uv run mkdocs serve
 {% endif %}
-
 {% if generate_docs == "pdoc" %}
+
 # Build documentation
 docs:
     uv run pdoc --output-directory build/site src/{{ package_name }}
