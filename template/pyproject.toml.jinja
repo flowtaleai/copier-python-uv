@@ -8,45 +8,49 @@ packages = [
   { include = "{{ package_name | replace('.', _copier_conf.sep) }}", from = "src" },
 ]
 requires-python = ">={{ python_version }},<4"
+
 dependencies = [
 {% if package_type == "cli" %}
-  "typer~=0.16.0",
+  "typer>=0.16.0,<1.0.0",
 {% endif %}
 ]
 
+[tool.uv]
+add-bounds = "major"
+
 [dependency-groups]
 dev=[
-  "pytest~=8.4",
-  "ruff~=0.11.12",
+  "pytest>=8.4.1,<9.0.0",
+  "ruff>=0.13.0,<0.14.0",
   {% if testing_framework == "pytest" %}
-  "pytest-mock~=3.11",
+  "pytest-mock>=3.14.1,<4.0.0",
   {% endif %}
   {% if type_checker == "mypy" %}
-  "mypy~=1.11",
+  "mypy>=1.11.0,<2.0.0",
   {% endif %}
-  "black~=25.1",
-  "pre-commit~=4.2",
-  "bump-my-version>=1.2.1,<2",
-  "detect-secrets~=1.4",
+  "black>=25.1.0,<26.0.0",
+  "pre-commit>=4.2.0,<5.0.0",
+  "bump-my-version>=1.2.1,<2.0.0",
+  "detect-secrets>=1.5.0,<2.0.0",
   {% if generate_docs == "mkdocs" %}
-  "mkdocstrings-python~=1.10",
-  "mkdocs-material~=9.5",
-  "mkdocs-gen-files~=0.5.0",
-  "mkdocs-literate-nav~=0.6.1",
+  "mkdocstrings-python>=1.10.0,<2.0.0",
+  "mkdocs-material>=9.5.0,<10.0.0",
+  "mkdocs-gen-files>=0.5.0,<1.0.0",
+  "mkdocs-literate-nav>=0.6.1,<1.0.0",
   {% endif %}
   {% if generate_docs == "pdoc" %}
-  "pdoc~=14.6",
+  "pdoc>=14.6.0,<15.0.0",
   {% endif %}
   {% if lint_dockerfile %}
-  "hadolint-bin~=2.12",
+  "hadolint-bin>=2.12,<3.0.0",
   {% endif %}
   {% if use_jupyter_notebooks %}
-  "ipykernel~=6.29",
-  "nbdime~=4.0"
+  "ipykernel>=6.29.0,<7.0.0",
+  "nbdime>=4.0.0,<5.0.0",
 ]
 
 jupyterlab=[
-  "jupyterlab>=4.2.2,<5"
+  "jupyterlab>=4.2.2,<5.0.0"
 {% endif %}
 ]
 {% if package_type == "cli" %}
