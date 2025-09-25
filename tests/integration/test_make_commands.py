@@ -26,7 +26,7 @@ def test_just_build(tmp_path, copier):
         "package_type": "cli",
     }
     project = copier.copy(tmp_path, **custom_answers)
-    project.run("uv setup --no-install-project")
+    project.run("uv sync --no-install-project")
 
     project.run("just build")
 
