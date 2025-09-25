@@ -5,9 +5,9 @@ stages:
   - test_and_lint
 
 before_script:
-  - apt-get update && apt-get install -y make
   - pip install uv==0.7.13
-  - make setup-strict
+  - pip install rust-just
+  - just setup-strict
 
 test:
   stage: test_and_lint
