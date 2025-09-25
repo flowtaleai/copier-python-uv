@@ -8,6 +8,7 @@ This document provides guidelines for contributing to the Copier Python UV proje
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.7.13
 - [Copier](https://copier.readthedocs.io/) (suggested install method: uvx)
+- [just](https://github.com/casey/just) (installed via `uv sync` or system package manager)
 - [direnv](https://direnv.net/) (recommended for environment management)
 - Git
 
@@ -33,13 +34,13 @@ To run the automated test suite for the template, you have several options:
 
 ```bash
 # Run unit tests only (fast feedback for development)
-make test
+just test
 
 # Run integration tests only (isolated environment using tox)
-make test-integration
+just test-integration
 
 # Run all tests with unified pytest report
-make test-all
+just test-all
 ```
 
 The template tests are organized into:
@@ -54,17 +55,17 @@ The test suite uses specific pytest markers to categorize tests by their environ
 
 All integration tests that perform `uv sync`, `pip install`, or similar package management operations should use this marker to ensure proper test isolation and prevent conflicts with the active development environment.
 
-For development, use `make test` for quick feedback. Use `make test-integration` or `make test-all` for comprehensive testing before submitting changes.
+For development, use `just test` for quick feedback. Use `just test-integration` or `just test-all` for comprehensive testing before submitting changes.
 
 #### Generating Test Projects
 
-1. **Using Make (Quickest Method)**:
+1. **Using just (Quickest Method)**:
    ```bash
-   make testproject
+   just testproject
    ```
    This creates a project in a temporary directory under `testprojects/` using the current template version.
 
-   > **Note:** The `make testproject` command uses `--vcs-ref=HEAD` which means it will use the committed files in your repository. To test changes, you must commit them first.
+   > **Note:** The `just testproject` command uses `--vcs-ref=HEAD` which means it will use the committed files in your repository. To test changes, you must commit them first.
 
 2. **Basic Manual Generation**:
    ```bash
@@ -89,7 +90,7 @@ For development, use `make test` for quick feedback. Use `make test-integration`
    mkdir /tmp/copier-test-project && cd /tmp/copier-test-project && \
    copier copy /media/data/software/copier-python-uv . -r HEAD \
    --data-file ~/copier-default-answers.yml && \
-   git init && git add . && git commit -m "initial commit" && make setup-strict && direnv allow
+   git init && git add . && git commit -m "initial commit" && just setup-strict && direnv allow
    ```
 
    After testing, you can undo the temporary commit if needed:
@@ -117,7 +118,16 @@ When making significant changes, test the template with various configurations:
    copier copy . /tmp/test-pdoc --data generate_docs=pdoc
    ```
 
-4. **Automated Testing with Predefined Answers**:
+4. **Task Runner Options**:
+   ```bash
+   # Test with justfile (default)
+   copier copy . /tmp/test-just --data use_just=true
+
+   # Test with Makefile
+   copier copy . /tmp/test-make --data use_just=false
+   ```
+
+5. **Automated Testing with Predefined Answers**:
    ```bash
    copier copy . /tmp/test-automated -r HEAD --data-file ~/copier-default-answers.yml
    ```
@@ -126,14 +136,24 @@ When making significant changes, test the template with various configurations:
 
 After generating a test project, verify it works correctly:
 
-1. Install dependencies:
+1. Install dependencies (adjust command based on generated task runner):
    ```bash
    cd /tmp/test-project
+
+   # If justfile was generated (default)
+   just setup-strict
+
+   # If Makefile was generated
    make setup-strict
    ```
 
 2. Run tests and linting:
    ```bash
+   # With justfile
+   just test
+   just lint
+
+   # With Makefile
    make test
    make lint
    ```
@@ -141,7 +161,8 @@ After generating a test project, verify it works correctly:
 3. Check other features based on your configuration:
    ```bash
    # For projects with documentation
-   make docs
+   just docs        # or: make docs
+   just serve-docs  # or: make serve-docs
 
    # For CLI projects
    uv run your-package-name --help
@@ -175,21 +196,33 @@ use_jupyter_notebooks: true
 generate_example_code: true
 strip_jupyter_outputs: true
 generate_docs: "mkdocs"
+use_just: true
 ```
 
 Adjust these values to match your testing preferences.
 
-### Available Make Commands
+### Available Commands
 
-The template project includes several useful commands:
+The template project uses `just` as the task runner. To see all available commands:
 
-- `make help`: Show all available commands with descriptions
-- `make setup`: Set up the development environment
-- `make setup-strict`: Set up the development environment with strict pre-commit rules
-- `make lint`: Run linting on all project files
-- `make test`: Run the template's tests using tox
-- `make testproject`: Generate a test project in a temporary directory
-- `make bump`: Bump the project version (you'll be prompted to select major, minor, or patch)
+```bash
+just
+```
+
+Key commands include:
+
+- `just setup`: Set up the development environment
+- `just setup-strict`: Set up the development environment with strict pre-commit rules
+- `just lint`: Run linting on all project files
+- `just test`: Run unit tests
+- `just test-integration`: Run integration tests
+- `just test-all`: Run all tests
+- `just testproject`: Generate a test project in a temporary directory
+- `just bump [VERSION_PART]`: Bump the project version
+  - Interactive: `just bump` (prompts for major/minor/patch)
+  - Direct: `just bump patch`, `just bump minor`, `just bump major`
+
+**Note**: If you prefer Make, you can still use `make <command>` by setting `use_just=false` when generating projects from this template.
 
 ### Template Structure
 
@@ -200,6 +233,7 @@ copier-python-uv/
 ├── template/                  # Template files that will be copied
 ├── tests/                     # Template tests
 ├── copier.yml                 # Copier configuration
+├── justfile                   # Task runner for the outer project
 └── ...                        # Other repository files
 ```
 
@@ -214,11 +248,30 @@ Template files follow these naming conventions:
 
 - **Static files** (copied as-is): Use standard extensions (e.g., `.py`, `.md`, `.toml`)
 - **Template files** (containing Jinja2 logic): Add `.jinja` suffix (e.g., `pyproject.toml.jinja`, `__init__.py.jinja`)
+- **Conditional files**: Use Jinja2 in filename (e.g., `{% if use_just %}justfile{% endif %}.jinja`)
 
 When creating or modifying template files:
 
 1. If a file contains any Jinja2 templating syntax (`{{ }}`, `{% %}`, etc.), use the `.jinja` suffix
 2. The `.jinja` suffix is automatically removed during project generation
+3. Use conditional filenames when a file should only be generated under certain conditions
+
+### Task Runner Choice (justfile vs Makefile)
+
+The template supports both `just` and `make` as task runners:
+
+- **justfile** (default, `use_just=true`):
+  - Modern, user-friendly syntax
+  - Built-in command listing with `just`
+  - Better error messages and cross-platform support
+  - Requires `rust-just` dependency
+
+- **Makefile** (`use_just=false`):
+  - Traditional, ubiquitous tool
+  - Pre-installed on most systems
+  - No additional dependencies
+
+Both provide identical functionality. The choice is purely preference-based.
 
 ### Recursive Template Structure
 
@@ -288,7 +341,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 - **MINOR**: New features or enhancements that are backward compatible
   - Example: Adding support for new documentation generators
-  - Example: New optional template features
+  - Example: New optional template features (like `use_just` option)
 
 - **PATCH**: Bug fixes that don't affect compatibility
   - Example: Fixing template syntax errors
@@ -297,22 +350,26 @@ This project follows [Semantic Versioning](https://semver.org/).
 To bump the project version:
 
 ```bash
-make bump
-```
+# Interactive prompt
+just bump
 
-And select the version part to increment (major, minor, or patch).
+# Or specify version part directly
+just bump patch
+just bump minor
+just bump major
+```
 
 ### VSCode
 
 - Add new extensions and settings in `template/.vscode/{extensions.json,settings.json}` not in devcontainer
   - In this way they are available both in the devcontainer and in a vscode instance not run using devcontainer
 - Ensure that the tools used by the extensions are loaded from the environment (e.g. black, ruff) and avoid using the bundled versions
-  - In this way we ensure that the same version of the tool is used in all the places (e.g. vscode, make, and pre-commit)
+  - In this way we ensure that the same version of the tool is used in all the places (e.g. vscode, just/make, and pre-commit)
 
 ### pre-commit
 
 - For tools that are run in multiple places, not just pre-commit (e.g. black, ruff) use `language: system` instead of pulling a pre-commit repo, and add the dependency in `pyproject.toml`
-  - In this way we ensure that the same version of the tool is used in all the places (e.g. vscode, make, and pre-commit)
+  - In this way we ensure that the same version of the tool is used in all the places (e.g. vscode, just/make, and pre-commit)
 
 ## Template Rationale Documentation
 
@@ -326,7 +383,7 @@ This helps future contributors understand the reasoning behind design decisions.
 
 ## Release Process
 
-1. Bump the version using `make bump` and select the appropriate version part
+1. Bump the version using `just bump` and select the appropriate version part (or use `just bump [patch|minor|major]`)
 2. Push the changes and new tag to the repository
 3. Create a release on GitHub/GitLab with release notes
 4. Run `copier update` on the outer project to apply template changes to itself
