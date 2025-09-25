@@ -5,7 +5,7 @@ import pytest
 def test_make_build(tmp_path, copier):
     custom_answers = {
         "package_type": "cli",
-        "use_just": False,
+        "task_runner": "make",
     }
     project = copier.copy(tmp_path, **custom_answers)
     project.run("uv sync --no-install-project")

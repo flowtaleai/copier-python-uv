@@ -44,7 +44,7 @@ dev=[
   {% if lint_dockerfile %}
   "hadolint-bin>=2.12,<3.0.0",
   {% endif %}
-  {% if use_just %}
+  {% if task_runner == "just" %}
   "rust-just~=1.42.4",
   {% endif %}
   {% if use_jupyter_notebooks %}

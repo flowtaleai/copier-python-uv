@@ -6,7 +6,7 @@ stages:
 
 before_script:
   - pip install uv==0.7.13
-  - pip install rust-just
+  - uv sync
   - just setup-strict
 
 test:

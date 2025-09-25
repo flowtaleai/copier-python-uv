@@ -121,10 +121,10 @@ When making significant changes, test the template with various configurations:
 4. **Task Runner Options**:
    ```bash
    # Test with justfile (default)
-   copier copy . /tmp/test-just --data use_just=true
+   copier copy . /tmp/test-just --data task_runner=just
 
    # Test with Makefile
-   copier copy . /tmp/test-make --data use_just=false
+   copier copy . /tmp/test-make --data task_runner=make
    ```
 
 5. **Automated Testing with Predefined Answers**:
@@ -196,7 +196,7 @@ use_jupyter_notebooks: true
 generate_example_code: true
 strip_jupyter_outputs: true
 generate_docs: "mkdocs"
-use_just: true
+task_runner: just
 ```
 
 Adjust these values to match your testing preferences.
@@ -218,11 +218,9 @@ Key commands include:
 - `just test-integration`: Run integration tests
 - `just test-all`: Run all tests
 - `just testproject`: Generate a test project in a temporary directory
-- `just bump [VERSION_PART]`: Bump the project version
-  - Interactive: `just bump` (prompts for major/minor/patch)
-  - Direct: `just bump patch`, `just bump minor`, `just bump major`
+- `just bump`: Bump the project version
 
-**Note**: If you prefer Make, you can still use `make <command>` by setting `use_just=false` when generating projects from this template.
+**Note**: If you prefer Make, you can still use `make <command>` by setting `task_runner=make` when generating projects from this template.
 
 ### Template Structure
 
@@ -248,7 +246,7 @@ Template files follow these naming conventions:
 
 - **Static files** (copied as-is): Use standard extensions (e.g., `.py`, `.md`, `.toml`)
 - **Template files** (containing Jinja2 logic): Add `.jinja` suffix (e.g., `pyproject.toml.jinja`, `__init__.py.jinja`)
-- **Conditional files**: Use Jinja2 in filename (e.g., `{% if use_just %}justfile{% endif %}.jinja`)
+- **Conditional files**: Use Jinja2 in filename (e.g., `{% if task_runner == "just" %}justfile{% endif %}.jinja`)
 
 When creating or modifying template files:
 
@@ -260,18 +258,18 @@ When creating or modifying template files:
 
 The template supports both `just` and `make` as task runners:
 
-- **justfile** (default, `use_just=true`):
+- **justfile** (default, `task_runner=just`):
   - Modern, user-friendly syntax
   - Built-in command listing with `just`
   - Better error messages and cross-platform support
   - Requires `rust-just` dependency
 
-- **Makefile** (`use_just=false`):
+- **Makefile** (`task_runner=make`):
   - Traditional, ubiquitous tool
-  - Pre-installed on most systems
+  - Pre-installed on most systems (Needs to be installed on Windows)
   - No additional dependencies
 
-Both provide identical functionality. The choice is purely preference-based.
+`just` is a superior choice if all is needed is a command runner, for building large projects it is better to chose the tool which was created for this - `make`.
 
 ### Recursive Template Structure
 
@@ -341,7 +339,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 - **MINOR**: New features or enhancements that are backward compatible
   - Example: Adding support for new documentation generators
-  - Example: New optional template features (like `use_just` option)
+  - Example: New optional template features (like `task_runner` option)
 
 - **PATCH**: Bug fixes that don't affect compatibility
   - Example: Fixing template syntax errors

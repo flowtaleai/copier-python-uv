@@ -189,7 +189,9 @@ lint_dockerfile:
   default: false
   help: "Include a pre-commit hook for Dockerfile linting"
 
-use_just:
-  type: bool
-  default: true
-  help: "Generate justfile instead of Makefile"
+task_runner:
+  choices:
+    - just
+    - make
+  default: just
+  help: "Task Runner"

@@ -43,8 +43,7 @@ docs:
 # Build documentation and serve it locally
 serve-docs:
     uv run mkdocs serve
-{% endif %}
-{% if generate_docs == "pdoc" %}
+{% elif generate_docs == "pdoc" %}
 
 # Build documentation
 docs:
