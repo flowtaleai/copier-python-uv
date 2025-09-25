@@ -21,9 +21,9 @@ add-bounds = "major"
 [dependency-groups]
 dev=[
   "pytest>=8.4.1,<9.0.0",
-  "ruff>=0.13.0,<0.14.0",
+  "ruff>=0.11.12,<0.12.0",
   {% if testing_framework == "pytest" %}
-  "pytest-mock>=3.14.1,<4.0.0",
+  "pytest-mock>=3.11.0,<4.0.0",
   {% endif %}
   {% if type_checker == "mypy" %}
   "mypy>=1.11.0,<2.0.0",

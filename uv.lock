@@ -233,7 +233,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.2.0,<5.0.0" },
     { name = "pytest", specifier = ">=8.4.1,<9.0.0" },
     { name = "pytest-copier", specifier = ">=0.4.1,<0.5.0" },
-    { name = "pytest-mock", specifier = ">=3.14.1,<4.0.0" },
+    { name = "pytest-mock", specifier = ">=3.11.0,<4.0.0" },
     { name = "ruff", specifier = ">=0.11.12,<0.12.0" },
     { name = "rust-just", specifier = ">=1.42.4" },
     { name = "tox", specifier = ">=4.27.0,<5.0.0" },
