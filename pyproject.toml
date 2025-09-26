@@ -16,9 +16,6 @@ authors = [
 ]
 license = { file = "LICENSE" }
 requires-python = ">=3.12,<4"
-dependencies = [
-    "rust-just>=1.42.4",
-]
 
 [tool.uv]
 add-bounds = "major"
@@ -36,6 +33,7 @@ dev = [
   "pytest-copier>=0.4.1,<0.5.0",
   "tox>=4.27.0,<5.0.0",
   "tox-uv>=1.26.0,<2.0.0",
+  "rust-just>=1.42.4",
 ]
 
 # This may change in the future once the `uv` build backend
