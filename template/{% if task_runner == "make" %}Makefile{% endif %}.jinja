@@ -42,8 +42,7 @@ docs: ## Build documentation
 serve-docs: ## Build documentation and serve it locally
 	@uv run mkdocs serve
 .PHONY: docs serve-docs
-{% endif %}
-{% if generate_docs == "pdoc" %}
+{% elif generate_docs == "pdoc" %}
 
 docs: ## Build documentation
 	@uv run pdoc --output-directory build/site src/{{ package_name }}

@@ -188,3 +188,10 @@ lint_dockerfile:
   type: bool
   default: false
   help: "Include a pre-commit hook for Dockerfile linting"
+
+task_runner:
+  choices:
+    - just
+    - make
+  default: just
+  help: "Task Runner"

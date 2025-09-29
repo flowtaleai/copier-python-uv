@@ -21,3 +21,4 @@ use_jupyter_notebooks: false
 use_lint_strict_rules: true
 uv_version: 0.7.13
 version: 3.0.0
+task_runner: just
