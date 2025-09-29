@@ -8,7 +8,6 @@ from .conftest import setup_git_repo
 
 def test_skip_if_exists_preserves_readme_on_update(tmp_path, copier):
     """README stays untouched while LICENSE picks up template changes."""
-
     project = copier.copy(tmp_path)
     setup_git_repo(project)
 
