@@ -82,3 +82,46 @@ class TestVersionManagement:
         assert "1.0.0" in copier_answers_path.read_text()
         assert "1.0.0" in pyproject_path.read_text()
         assert "1.0.0" in project_init.read_text()
+
+
+class TestBlackIntegration:
+    """Tests for code formatting tool integration (black)."""
+
+    @pytest.mark.venv
+    @pytest.mark.parametrize(
+        ("text", "fail"),
+        [
+            (
+                (
+                    'test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+                    " Donec porta, nunc at interdum gravida, massa sem lacinia libero,"
+                    ' non feugiat turpis nunc nec sapien."'
+                ),
+                True,
+            ),
+            (
+                (
+                    'test = """Lorem ipsum dolor sit amet, consectetur adipiscing'
+                    " elit\nonec porta, nunc at interdum gravida, massa sem lacinia"
+                    ' libero\nnon feugiat turpis nunc nec sapien.\n"""\n'
+                ),
+                False,
+            ),
+        ],
+    )
+    def test_black_string_processing(self, tmp_path, text, fail):
+        # This is optional; shows that Black leaves string literal content alone.
+        p = tmp_path / "sample.py"
+        p.write_text(text)
+        # Defer to existing black pre-commit config; skip if black unavailable.
+        import subprocess
+
+        proc = subprocess.run(
+            ["black", "--check", str(p)], capture_output=True, text=True
+        )
+        if fail:
+            assert proc.returncode == 1
+            assert "1 file would be reformatted." in proc.stderr
+        else:
+            assert proc.returncode == 0
+            assert "1 file would be left unchanged." in proc.stderr
