@@ -87,7 +87,6 @@ class TestVersionManagement:
 class TestBlackIntegration:
     """Tests for code formatting tool integration (black)."""
 
-    @pytest.mark.venv
     @pytest.mark.parametrize(
         ("text", "fail"),
         [
@@ -125,3 +124,14 @@ class TestBlackIntegration:
         else:
             assert proc.returncode == 0
             assert "1 file would be left unchanged." in proc.stderr
+
+    def test_black_in_new_project(self, tmp_path, copier):
+        custom_answers = {"code_formatter": "black"}
+        project = copier.copy(tmp_path, **custom_answers)
+        setup_git_repo(project)
+
+        # Run black via pre-commit.
+        black_output = project.run("uv run black src/")
+
+        # Check that the file was reformatted (in this case, should be unchanged).
+        assert black_output.endswith("4 files left unchanged.\n")
