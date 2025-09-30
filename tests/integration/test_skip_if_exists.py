@@ -1,90 +1,58 @@
-from __future__ import annotations
+"""Integration: skip_if_exists behavior."""
 
-import subprocess
-from pathlib import Path
+from .conftest import (
+    answers_commit,
+    commit_template_changes,
+    setup_git_repo,
+    template_paths_license,
+    template_paths_readme,
+    update_project,
+)
 
-from .conftest import setup_git_repo
 
-
-def test_skip_if_exists_preserves_readme_and_updates_license(tmp_path, copier):
-    """README stays untouched while LICENSE picks up template changes."""
+def test_skip_if_exists_preserves_readme_on_update(
+    tmp_path,
+    copier,
+):
     project = copier.copy(tmp_path)
     setup_git_repo(project)
 
-    readme_path = project.path / "README.md"
-    license_path = project.path / "LICENSE"
-
-    original_license_content = license_path.read_text()
-
-    user_managed_readme = "User-managed README content\n"
-    readme_path.write_text(user_managed_readme)
+    readme = project.path / "README.md"
+    user_content = "User-managed README content\n"
+    readme.write_text(user_content)
     project.run("git add README.md")
     project.run("git commit -m 'Customize README'")
 
-    template_root = Path(copier.template)
-    template_subdir = template_root / "template"
-    template_repo = template_root
-    original_template_commit = (
-        subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=template_repo)
-        .decode()
-        .strip()
-    )
-    template_readme_path = template_subdir / "README.md.jinja"
-    license_template_name = "{% if license != 'Proprietary' %}LICENSE{% endif %}.jinja"
-    template_license_path = template_subdir / license_template_name
+    before = answers_commit(project)
 
-    template_readme_content = template_readme_path.read_text()
-    template_license_content = template_license_path.read_text()
+    template_repo, tpl_readme = template_paths_readme(copier)
+    marker = "\n<!-- Template README change marker -->\n"
 
-    readme_template_marker = "\n<!-- Template README change marker -->\n"
-    license_template_marker = "\nUpdated LICENSE template marker\n"
+    with commit_template_changes(template_repo, {tpl_readme: marker}) as (
+        new_sha,
+        new_desc,
+    ):
+        update_project(project)
 
-    rel_template_readme = template_readme_path.relative_to(template_repo).as_posix()
-    rel_template_license = template_license_path.relative_to(template_repo).as_posix()
+    assert readme.read_text() == user_content
+    assert marker not in readme.read_text()
+    assert answers_commit(project) == new_desc
+    assert answers_commit(project) != before
 
-    subprocess.run(
-        ["git", "config", "user.name", "Template User"],
-        cwd=template_repo,
-        check=True,
-    )
-    subprocess.run(
-        ["git", "config", "user.email", "template@example.com"],
-        cwd=template_repo,
-        check=True,
-    )
 
-    try:
-        template_readme_path.write_text(
-            template_readme_content + readme_template_marker
-        )
-        template_license_path.write_text(
-            template_license_content + license_template_marker
-        )
+def test_skip_if_exists_updates_license_from_template(tmp_path, copier):
+    project = copier.copy(tmp_path)
+    setup_git_repo(project)
 
-        subprocess.run(
-            ["git", "add", rel_template_readme, rel_template_license],
-            cwd=template_repo,
-            check=True,
-        )
-        subprocess.run(
-            ["git", "commit", "-m", "Apply template marker for tests"],
-            cwd=template_repo,
-            check=True,
-        )
+    license_file = project.path / "LICENSE"
+    original = license_file.read_text()
 
-        project.run("copier update --defaults --vcs-ref HEAD")
+    template_repo, tpl_license = template_paths_license(copier)
+    license_marker = "\nUpdated LICENSE template marker\n"
 
-        updated_readme = readme_path.read_text()
-        updated_license = license_path.read_text()
-    finally:
-        subprocess.run(
-            ["git", "reset", "--hard", original_template_commit],
-            cwd=template_repo,
-            check=True,
-        )
+    with commit_template_changes(template_repo, {tpl_license: license_marker}):
+        update_project(project)
 
-    assert updated_readme == user_managed_readme
-    assert readme_template_marker not in updated_readme
-
-    assert updated_license != original_license_content
-    assert license_template_marker in updated_license
+    updated = license_file.read_text()
+    assert updated != original
+    assert license_marker in updated
