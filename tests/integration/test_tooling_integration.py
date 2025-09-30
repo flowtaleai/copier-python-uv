@@ -87,51 +87,33 @@ class TestVersionManagement:
 class TestBlackIntegration:
     """Tests for code formatting tool integration (black)."""
 
-    @pytest.mark.parametrize(
-        ("text", "fail"),
-        [
-            (
-                (
-                    'test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-                    " Donec porta, nunc at interdum gravida, massa sem lacinia libero,"
-                    ' non feugiat turpis nunc nec sapien."'
-                ),
-                True,
-            ),
-            (
-                (
-                    'test = """Lorem ipsum dolor sit amet, consectetur adipiscing'
-                    " elit\nonec porta, nunc at interdum gravida, massa sem lacinia"
-                    ' libero\nnon feugiat turpis nunc nec sapien.\n"""\n'
-                ),
-                False,
-            ),
-        ],
-    )
-    def test_black_string_processing(self, tmp_path, text, fail):
-        # This is optional; shows that Black leaves string literal content alone.
-        p = tmp_path / "sample.py"
-        p.write_text(text)
-        # Defer to existing black pre-commit config; skip if black unavailable.
-        import subprocess
-
-        proc = subprocess.run(
-            ["black", "--check", str(p)], capture_output=True, text=True
-        )
-        if fail:
-            assert proc.returncode == 1
-            assert "1 file would be reformatted." in proc.stderr
-        else:
-            assert proc.returncode == 0
-            assert "1 file would be left unchanged." in proc.stderr
-
-    def test_black_in_new_project(self, tmp_path, copier):
+    @pytest.mark.venv
+    def test_black_fails_on_unformatted_code(self, tmp_path, copier):
         custom_answers = {"code_formatter": "black"}
         project = copier.copy(tmp_path, **custom_answers)
         setup_git_repo(project)
+        project.run("just setup")
 
-        # Run black via pre-commit.
-        black_output = project.run("uv run black src/")
+        # Create a file with unformatted code
+        test_file = project.path / "src" / project.answers["package_name"] / "test.py"
+        test_file.write_text(
+            'test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+            " Donec porta, nunc at interdum gravida, massa sem lacinia libero,"
+            ' non feugiat turpis nunc nec sapien."'
+        )
 
-        # Check that the file was reformatted (in this case, should be unchanged).
-        assert black_output.endswith("4 files left unchanged.\n")
+        with pytest.raises(RuntimeError) as exc_info:
+            project.run("uv run black --check src/")
+
+        assert "would be reformatted" in str(exc_info.value)
+
+    @pytest.mark.venv
+    def test_black_passes_on_formatted_code(self, tmp_path, copier):
+        custom_answers = {"code_formatter": "black"}
+        project = copier.copy(tmp_path, **custom_answers)
+        setup_git_repo(project)
+        project.run("just setup")
+
+        output = project.run("uv run black --check src/")
+
+        assert "left unchanged" in output
