@@ -73,13 +73,16 @@ packages = ["src/{{ package_name | replace('.', _copier_conf.sep) }}"]
 
 [tool.black]
 line-length = {{ max_line_length }}
+preview = true
+enable-unstable-feature = ["string_processing"]
 
 [tool.ruff]
 line-length = {{ max_line_length }}
-target-version = "py{{ python_version | replace('.', '') }}"
+force-exclude = true
+fix = true
+show-fixes = true
 
 [tool.ruff.lint]
-
 select = [
     "E", # pycodestyle, basic flake8
     "W", # pycodestyle, basic flake8

@@ -9,7 +9,7 @@
       - id: black
         name: Format files with black
         language: system
-        entry: uv run black --preview
+        entry: uv run black
         require_serial: true
         types_or: [python, pyi]
       - id: ruff-lint
@@ -18,10 +18,6 @@
         language: system
         require_serial: true
         types_or: [python, pyi, jupyter]
-        args:
-          - --fix
-          - --show-fixes
-          - --force-exclude
 {% if type_checker == "mypy" %}
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.2

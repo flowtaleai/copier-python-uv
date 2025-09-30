@@ -82,3 +82,38 @@ class TestVersionManagement:
         assert "1.0.0" in copier_answers_path.read_text()
         assert "1.0.0" in pyproject_path.read_text()
         assert "1.0.0" in project_init.read_text()
+
+
+class TestBlackIntegration:
+    """Tests for code formatting tool integration (black)."""
+
+    @pytest.mark.venv
+    def test_black_fails_on_unformatted_code(self, tmp_path, copier):
+        custom_answers = {"code_formatter": "black"}
+        project = copier.copy(tmp_path, **custom_answers)
+        setup_git_repo(project)
+        project.run("just setup")
+
+        # Create a file with unformatted code
+        test_file = project.path / "src" / project.answers["package_name"] / "test.py"
+        test_file.write_text(
+            'test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+            " Donec porta, nunc at interdum gravida, massa sem lacinia libero,"
+            ' non feugiat turpis nunc nec sapien."'
+        )
+
+        with pytest.raises(RuntimeError) as exc_info:
+            project.run("uv run black --check src/")
+
+        assert "would be reformatted" in str(exc_info.value)
+
+    @pytest.mark.venv
+    def test_black_passes_on_formatted_code(self, tmp_path, copier):
+        custom_answers = {"code_formatter": "black"}
+        project = copier.copy(tmp_path, **custom_answers)
+        setup_git_repo(project)
+        project.run("just setup")
+
+        output = project.run("uv run black --check src/")
+
+        assert "left unchanged" in output
