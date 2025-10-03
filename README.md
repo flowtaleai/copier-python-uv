@@ -7,7 +7,7 @@ Opinionated copier template for python projects using uv
 | Task                   | Tool                                                    |
 |------------------------|---------------------------------------------------------|
 | Command line interface | Typer                                                   |
-| Testing framework      | pytest, unittest                                        |
+| Testing framework      | pytest                                                  |
 | Test mocking           | pytest-mock                                             |
 | Pre-commit hooks       | pre-commit                                              |
 | Version management     | bump-my-version                                         |

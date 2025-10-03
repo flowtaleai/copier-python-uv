@@ -13,12 +13,7 @@ before_script:
 test:
   stage: test
   script:
-    {% if testing_framework == "pytest" %}
     - uv run pytest
-    {% endif %}
-    {% if testing_framework == "unittest" %}
-    - uv run python -m unittest discover
-    {% endif %}
 
 pre-commit:
   stage: linting

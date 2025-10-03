@@ -101,12 +101,6 @@ uv_version:
     uv version must follow semantic versioning (e.g., 1.0.0, 2.1.3-alpha, 3.0.0+build123).
     {% endif %}
 
-testing_framework:
-  choices:
-    - pytest
-    - unittest
-  default: pytest
-  help: "Python testing framework"
 
 max_line_length:
   type: int
