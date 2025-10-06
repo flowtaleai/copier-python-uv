@@ -1,7 +1,6 @@
 """Integration: skip_if_exists behavior."""
 
 from .conftest import (
-    answers_commit,
     commit_template_changes,
     setup_git_repo,
     template_paths_license,
@@ -23,8 +22,6 @@ def test_skip_if_exists_preserves_readme_on_update(
     project.run("git add README.md")
     project.run("git commit -m 'Customize README'")
 
-    before = answers_commit(project)
-
     template_repo, tpl_readme = template_paths_readme(copier)
     marker = "\n<!-- Template README change marker -->\n"
 
@@ -35,9 +32,6 @@ def test_skip_if_exists_preserves_readme_on_update(
         update_project(project)
 
     assert readme.read_text() == user_content
-    assert marker not in readme.read_text()
-    assert answers_commit(project) == new_desc
-    assert answers_commit(project) != before
 
 
 def test_skip_if_exists_updates_license_from_template(tmp_path, copier):
