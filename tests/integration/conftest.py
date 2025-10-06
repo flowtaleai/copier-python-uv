@@ -70,6 +70,7 @@ def commit_template_changes(repo: Path, changes: dict[Path, str]):
         path.write_text(original + delta)
         git(repo, "add", path.relative_to(repo).as_posix())
     git(repo, "commit", "-m", "Apply template markers for tests")
+    git(repo, "tag", "999.999.999")
 
 
 def update_project(project: CopierProject) -> None:
