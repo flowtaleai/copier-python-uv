@@ -1,5 +1,9 @@
 """Integration: skip_if_exists behavior."""
 
+import shutil
+import tempfile
+from pathlib import Path
+
 from .conftest import (
     commit_template_changes,
     setup_git_repo,
@@ -21,6 +25,11 @@ def test_skip_if_exists_preserves_readme_on_update(
     readme.write_text(user_content)
     project.run("git add README.md")
     project.run("git commit -m 'Customize README'")
+
+    template_path = Path(copier.template)
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        shutil.copytree(template_path, temp_dir, dirs_exist_ok=True)
 
     template_repo, tpl_readme = template_paths_readme(copier)
     marker = "\n<!-- Template README change marker -->\n"
