@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import subprocess
-from contextlib import contextmanager
 from pathlib import Path
 
 from pytest_copier.plugin import CopierProject
@@ -63,21 +62,14 @@ def template_paths_license(copier) -> tuple[Path, Path]:
     return template_root, license_template
 
 
-@contextmanager
 def commit_template_changes(repo: Path, changes: dict[Path, str]):
+    """Apply changes to template files and commit them."""
     ensure_template_git_identity(repo)
-    before = git_output(repo, "rev-parse", "HEAD")
-    try:
-        for path, delta in changes.items():
-            original = path.read_text()
-            path.write_text(original + delta)
-            git(repo, "add", path.relative_to(repo).as_posix())
-        git(repo, "commit", "-m", "Apply template markers for tests")
-        new_sha = git_output(repo, "rev-parse", "HEAD")
-        new_desc = git_output(repo, "describe", "--tags", "--always")
-        yield new_sha, new_desc
-    finally:
-        git(repo, "reset", "--hard", before)
+    for path, delta in changes.items():
+        original = path.read_text()
+        path.write_text(original + delta)
+        git(repo, "add", path.relative_to(repo).as_posix())
+    git(repo, "commit", "-m", "Apply template markers for tests")
 
 
 def update_project(project: CopierProject) -> None:
