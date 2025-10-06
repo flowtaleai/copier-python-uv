@@ -1,46 +1,41 @@
 """Integration: skip_if_exists behavior."""
 
 import shutil
-import tempfile
 from pathlib import Path
 
 from .conftest import (
     commit_template_changes,
     setup_git_repo,
     template_paths_license,
-    template_paths_readme,
     update_project,
 )
 
 
 def test_skip_if_exists_preserves_readme_on_update(
     tmp_path,
+    tmp_path_factory,
     copier,
 ):
     project = copier.copy(tmp_path)
     setup_git_repo(project)
 
-    readme = project.path / "README.md"
+    readme_path = project.path / "README.md"
     user_content = "User-managed README content\n"
-    readme.write_text(user_content)
+    readme_path.write_text(user_content)
     project.run("git add README.md")
     project.run("git commit -m 'Customize README'")
 
-    template_path = Path(copier.template)
-    with tempfile.TemporaryDirectory() as td:
-        temp_dir = Path(td)
-        shutil.copytree(template_path, temp_dir, dirs_exist_ok=True)
+    original_template_path = Path(copier.template)
+    copy_template_path = tmp_path_factory.mktemp("template_root_copy")
+    shutil.copytree(original_template_path, copy_template_path, dirs_exist_ok=True)
 
-    template_repo, tpl_readme = template_paths_readme(copier)
+    copy_template_readme_path = copy_template_path / "template" / "README.md.jinja"
     marker = "\n<!-- Template README change marker -->\n"
 
-    with commit_template_changes(template_repo, {tpl_readme: marker}) as (
-        new_sha,
-        new_desc,
-    ):
-        update_project(project)
+    commit_template_changes(copy_template_path, {copy_template_readme_path: marker})
+    update_project(project)
 
-    assert readme.read_text() == user_content
+    assert readme_path.read_text() == user_content
 
 
 def test_skip_if_exists_updates_license_from_template(tmp_path, copier):
