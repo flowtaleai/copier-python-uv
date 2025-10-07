@@ -59,13 +59,33 @@ For development, use `just test` for quick feedback. Use `just test-integration`
 
 #### Generating Test Projects
 
-1. **Using just (Quickest Method)**:
+1. **Using just (Recommended Method)**:
    ```bash
-   just testproject
-   ```
-   This creates a project in a temporary directory under `testprojects/` using the current template version.
+   # Test from HEAD commit (default) - uses test answers file
+   just test-template
 
-   > **Note:** The `just testproject` command uses `--vcs-ref=HEAD` which means it will use the committed files in your repository. To test changes, you must commit them first.
+   # Test interactively (prompts for all values)
+   just test-template interactive
+
+   # Test from specific commit/tag/branch with test answers
+   just test-template test abc1234
+   just test-template test v1.2.3
+   just test-template test feature-branch
+
+   # Test from specific ref interactively
+   just test-template interactive abc1234
+   just test-template interactive main
+
+   # Test current local version (uncommitted changes) with test answers
+   just test-template-local
+
+   # Test current local version interactively
+   just test-template-local interactive
+   ```
+
+   This creates a project in a temporary directory under `testprojects/` using the specified template version.
+
+   > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which means it will use the committed files in your repository. To test uncommitted changes, use `just test-template-local`. By default, both commands use `.copier-answers.test.yml` for quick testing. Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
 
 2. **Basic Manual Generation**:
    ```bash
@@ -170,7 +190,7 @@ After generating a test project, verify it works correctly:
 
 #### Using a Default Answers File
 
-To streamline testing, create a default answers YAML file:
+The template includes `.copier-answers.test.yml` with fun, cat-themed test values that exercise most template features. You can also create your own answers file for different testing scenarios:
 
 ```yaml
 # ~/copier-default-answers.yml
@@ -217,10 +237,10 @@ Key commands include:
 - `just test`: Run unit tests
 - `just test-integration`: Run integration tests
 - `just test-all`: Run all tests
-- `just testproject`: Generate a test project in a temporary directory
+- `just test-template`: Generate a test project in a temporary directory (recommended)
 - `just bump`: Bump the project version
 
-**Note**: If you prefer Make, you can still use `make <command>` by setting `task_runner=make` when generating projects from this template.
+**Note**: The template supports both `just` and `make` as task runners. Use `just test-template` for testing the template, and set `task_runner=make` when generating projects from this template if you prefer Make.
 
 ### Template Structure
 
