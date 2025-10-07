@@ -41,9 +41,41 @@ test-all:
     uv run tox -re all
 
 # Test the copier template by creating a new project in temporary directory
-testproject:
+# Usage:
+#   just test-template              -> uses test answers file (default)
+#   just test-template interactive  -> prompts for all values
+#   just test-template HEAD         -> uses test answers file with specific ref
+#   just test-template interactive main -> interactive with specific ref
+test-template MODE='test' REF='HEAD':
     #!/usr/bin/env bash
-    mkdir -p testprojects
-    tempdir=$(mktemp -p testprojects -d testproject.XXX)
-    copier copy --vcs-ref=HEAD . $tempdir
+    mkdir -p test_templates
+    tempdir=$(mktemp -p test_templates -d test_template.XXX)
+    echo "Installing from git ref: {{REF}}"
+    if [ "{{MODE}}" = "interactive" ]; then
+        echo "Running in interactive mode..."
+        copier copy --vcs-ref={{REF}} . $tempdir
+    else
+        echo "Using test answers file..."
+        copier copy --data-file .copier-answers.test.yml --vcs-ref={{REF}} . $tempdir
+    fi
     echo "Created project in $tempdir"
+    echo "To test the project: cd $tempdir && just setup"
+
+# Test the copier template using current local version (uncommitted changes)
+# Usage:
+#   just test-template-local              -> uses test answers file (default)
+#   just test-template-local interactive  -> prompts for all values
+test-template-local MODE='test':
+    #!/usr/bin/env bash
+    mkdir -p test_templates
+    tempdir=$(mktemp -p test_templates -d test_template.XXX)
+    echo "Installing current local version..."
+    if [ "{{MODE}}" = "interactive" ]; then
+        echo "Running in interactive mode..."
+        copier copy . $tempdir
+    else
+        echo "Using test answers file..."
+        copier copy --data-file .copier-answers.test.yml . $tempdir
+    fi
+    echo "Created project in $tempdir"
+    echo "To test the project: cd $tempdir && just setup"
