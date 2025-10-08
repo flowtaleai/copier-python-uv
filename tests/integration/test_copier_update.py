@@ -25,6 +25,14 @@ def copy_template_fixture(tmp_path_factory, copier):
     )
 
 
+def modify_project_file(project, target_file_path: Path):
+    user_content = "User-managed README content\n"
+    target_file_path.write_text(user_content)
+    project.run(f"git add {target_file_path}")
+    project.run("git commit -m 'Changes'")
+    return user_content
+
+
 class TestSkipIfExists:
     """Tests for the skip_if_exists behavior of copier."""
 
@@ -35,10 +43,7 @@ class TestSkipIfExists:
         setup_git_repo(project)
 
         readme_path = project.path / "README.md"
-        user_content = "User-managed README content\n"
-        readme_path.write_text(user_content)
-        project.run("git add README.md")
-        project.run("git commit -m 'Customize README'")
+        user_content = modify_project_file(project, readme_path)
 
         copy_template_readme_path = (
             copy_template_fixture.template / "template" / "README.md.jinja"
@@ -62,10 +67,7 @@ class TestSkipIfExists:
         setup_git_repo(project)
 
         project_pyproject_path = project.path / "pyproject.toml"
-        user_content = "User-managed pyproject content\n"
-        project_pyproject_path.write_text(user_content)
-        project.run("git add pyproject.toml")
-        project.run("git commit -m 'Customize pyproject'")
+        modify_project_file(project, project_pyproject_path)
 
         copy_template_license_path = (
             copy_template_fixture.template / "template" / "pyproject.toml.jinja"
