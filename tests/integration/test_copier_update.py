@@ -6,11 +6,7 @@ from pathlib import Path
 import pytest
 from pytest_copier.plugin import CopierFixture
 
-from .conftest import (
-    answers_commit,
-    commit_template_changes,
-    setup_git_repo,
-)
+from .conftest import answers_commit, git, setup_git_repo
 
 
 @pytest.fixture
@@ -34,10 +30,18 @@ def modify_project_file(project, target_file_path: Path):
 
 
 def modify_template_file(copy_template_fixture, template_file_path: Path):
+    template_root_path = copy_template_fixture.template
+    git(template_root_path, "config", "user.name", "Template User")
+    git(template_root_path, "config", "user.email", "template@example.com")
+
+    original = template_file_path.read_text()
     marker = "\n<!-- change marker -->\n"
-    commit_template_changes(
-        copy_template_fixture.template, {template_file_path: marker}
-    )
+    template_file_path.write_text(original + marker)
+
+    git(template_root_path, "add", template_file_path)
+    git(template_root_path, "commit", "-m", "Apply template markers for tests")
+    git(template_root_path, "tag", "999.999.999")
+
     return marker
 
 
