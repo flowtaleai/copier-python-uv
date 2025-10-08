@@ -33,6 +33,14 @@ def modify_project_file(project, target_file_path: Path):
     return user_content
 
 
+def modify_template_file(copy_template_fixture, template_file_path: Path):
+    marker = "\n<!-- change marker -->\n"
+    commit_template_changes(
+        copy_template_fixture.template, {template_file_path: marker}
+    )
+    return marker
+
+
 class TestSkipIfExists:
     """Tests for the skip_if_exists behavior of copier."""
 
@@ -48,10 +56,7 @@ class TestSkipIfExists:
         copy_template_readme_path = (
             copy_template_fixture.template / "template" / "README.md.jinja"
         )
-        marker = "\n<!-- Template README change marker -->\n"
-        commit_template_changes(
-            copy_template_fixture.template, {copy_template_readme_path: marker}
-        )
+        modify_template_file(copy_template_fixture, copy_template_readme_path)
 
         template_commit_before = answers_commit(project)
         project.update()
@@ -72,10 +77,7 @@ class TestSkipIfExists:
         copy_template_license_path = (
             copy_template_fixture.template / "template" / "pyproject.toml.jinja"
         )
-        marker = "\n<!-- Template pyproject change marker -->\n"
-        commit_template_changes(
-            copy_template_fixture.template, {copy_template_license_path: marker}
-        )
+        marker = modify_template_file(copy_template_fixture, copy_template_license_path)
 
         template_commit_before = answers_commit(project)
         project.update()
