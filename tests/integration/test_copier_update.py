@@ -3,6 +3,7 @@
 import shutil
 from pathlib import Path
 
+import pytest
 from pytest_copier.plugin import CopierFixture
 
 from .conftest import (
@@ -12,21 +13,24 @@ from .conftest import (
 )
 
 
+@pytest.fixture
+def copy_template_fixture(tmp_path_factory, copier):
+    original_template_path = Path(copier.template)
+    copy_template_path = tmp_path_factory.mktemp("template_root_copy")
+    shutil.copytree(original_template_path, copy_template_path, dirs_exist_ok=True)
+    return CopierFixture(
+        template=copy_template_path,
+        defaults=copier.defaults,
+        monkeypatch=copier.monkeypatch,
+    )
+
+
 class TestSkipIfExists:
     """Tests for the skip_if_exists behavior of copier."""
 
     def test_skip_if_exists_preserves_readme_on_update(
-        self, tmp_path, tmp_path_factory, copier
+        self, copy_template_fixture, tmp_path
     ):
-        original_template_path = Path(copier.template)
-        copy_template_path = tmp_path_factory.mktemp("template_root_copy")
-        shutil.copytree(original_template_path, copy_template_path, dirs_exist_ok=True)
-        copy_template_fixture = CopierFixture(
-            template=copy_template_path,
-            defaults=copier.defaults,
-            monkeypatch=copier.monkeypatch,
-        )
-
         project = copy_template_fixture.copy(tmp_path)
         setup_git_repo(project)
 
@@ -36,9 +40,13 @@ class TestSkipIfExists:
         project.run("git add README.md")
         project.run("git commit -m 'Customize README'")
 
-        copy_template_readme_path = copy_template_path / "template" / "README.md.jinja"
+        copy_template_readme_path = (
+            copy_template_fixture.template / "template" / "README.md.jinja"
+        )
         marker = "\n<!-- Template README change marker -->\n"
-        commit_template_changes(copy_template_path, {copy_template_readme_path: marker})
+        commit_template_changes(
+            copy_template_fixture.template, {copy_template_readme_path: marker}
+        )
 
         template_commit_before = answers_commit(project)
         project.update()
@@ -48,17 +56,8 @@ class TestSkipIfExists:
         assert readme_path.read_text() == user_content
 
     def test_skip_if_exists_updates_license_from_template(
-        self, tmp_path, tmp_path_factory, copier
+        self, copy_template_fixture, tmp_path
     ):
-        original_template_path = Path(copier.template)
-        copy_template_path = tmp_path_factory.mktemp("template_root_copy")
-        shutil.copytree(original_template_path, copy_template_path, dirs_exist_ok=True)
-        copy_template_fixture = CopierFixture(
-            template=copy_template_path,
-            defaults=copier.defaults,
-            monkeypatch=copier.monkeypatch,
-        )
-
         project = copy_template_fixture.copy(tmp_path)
         setup_git_repo(project)
 
@@ -69,11 +68,11 @@ class TestSkipIfExists:
         project.run("git commit -m 'Customize pyproject'")
 
         copy_template_license_path = (
-            copy_template_path / "template" / "pyproject.toml.jinja"
+            copy_template_fixture.template / "template" / "pyproject.toml.jinja"
         )
         marker = "\n<!-- Template pyproject change marker -->\n"
         commit_template_changes(
-            copy_template_path, {copy_template_license_path: marker}
+            copy_template_fixture.template, {copy_template_license_path: marker}
         )
 
         template_commit_before = answers_commit(project)
