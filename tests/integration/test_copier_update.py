@@ -72,12 +72,10 @@ class TestSkipIfExists:
 
         readme_path = project.path / "README.md"
         user_content = modify_project_file(project, readme_path)
-
         copy_template_readme_path = (
             copy_template_fixture.template / "template" / "README.md.jinja"
         )
         modify_template_file(copy_template_fixture, copy_template_readme_path)
-
         safe_update_project(project)
 
         assert readme_path.read_text() == user_content
@@ -90,12 +88,10 @@ class TestSkipIfExists:
 
         project_pyproject_path = project.path / "pyproject.toml"
         modify_project_file(project, project_pyproject_path)
-
         copy_template_license_path = (
             copy_template_fixture.template / "template" / "pyproject.toml.jinja"
         )
         marker = modify_template_file(copy_template_fixture, copy_template_license_path)
-
         safe_update_project(project)
 
         assert marker in project_pyproject_path.read_text()
