@@ -53,6 +53,14 @@ def answers_commit(project: CopierProject) -> str:
     return ""
 
 
+def safe_update_project(project):
+    """Safely update the project by checking for changes."""
+    template_commit_before = answers_commit(project)
+    project.update()
+    template_commit_after = answers_commit(project)
+    assert template_commit_before != template_commit_after
+
+
 class TestSkipIfExists:
     """Tests for the skip_if_exists behavior of copier."""
 
@@ -70,11 +78,8 @@ class TestSkipIfExists:
         )
         modify_template_file(copy_template_fixture, copy_template_readme_path)
 
-        template_commit_before = answers_commit(project)
-        project.update()
-        template_commit_after = answers_commit(project)
+        safe_update_project(project)
 
-        assert template_commit_before != template_commit_after
         assert readme_path.read_text() == user_content
 
     def test_skip_if_exists_updates_license_from_template(
@@ -91,9 +96,6 @@ class TestSkipIfExists:
         )
         marker = modify_template_file(copy_template_fixture, copy_template_license_path)
 
-        template_commit_before = answers_commit(project)
-        project.update()
-        template_commit_after = answers_commit(project)
+        safe_update_project(project)
 
-        assert template_commit_before != template_commit_after
         assert marker in project_pyproject_path.read_text()
