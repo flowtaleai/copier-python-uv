@@ -4,9 +4,9 @@ import shutil
 from pathlib import Path
 
 import pytest
-from pytest_copier.plugin import CopierFixture
+from pytest_copier.plugin import CopierFixture, CopierProject
 
-from .conftest import answers_commit, git, setup_git_repo
+from .conftest import git, setup_git_repo
 
 
 @pytest.fixture
@@ -43,6 +43,14 @@ def modify_template_file(copy_template_fixture, template_file_path: Path):
     git(template_root_path, "tag", "999.999.999")
 
     return marker
+
+
+def answers_commit(project: CopierProject) -> str:
+    answers = (project.path / ".copier-answers.yml").read_text()
+    for line in answers.splitlines():
+        if line.strip().startswith("_commit:"):
+            return line.split(":", 1)[1].strip().strip("'").strip('"')
+    return ""
 
 
 class TestSkipIfExists:

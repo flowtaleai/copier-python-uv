@@ -30,11 +30,3 @@ def setup_precommit_strict(project: CopierProject) -> None:
 
 def git(cwd: Path, *args: str) -> None:
     subprocess.run(["git", *args], cwd=cwd, check=True)
-
-
-def answers_commit(project: CopierProject) -> str:
-    answers = (project.path / ".copier-answers.yml").read_text()
-    for line in answers.splitlines():
-        if line.strip().startswith("_commit:"):
-            return line.split(":", 1)[1].strip().strip("'").strip('"')
-    return ""
