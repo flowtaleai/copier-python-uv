@@ -29,16 +29,16 @@ def modify_project_file(project, target_file_path: Path):
     return user_content
 
 
-def modify_template_file(copy_template_fixture, template_file_path: Path):
+def modify_template_file(copy_template_fixture, target_file_path: Path):
     template_root_path = copy_template_fixture.template
     git(template_root_path, "config", "user.name", "Template User")
     git(template_root_path, "config", "user.email", "template@example.com")
 
-    original = template_file_path.read_text()
+    original = target_file_path.read_text()
     marker = "\n<!-- change marker -->\n"
-    template_file_path.write_text(original + marker)
+    target_file_path.write_text(original + marker)
 
-    git(template_root_path, "add", template_file_path)
+    git(template_root_path, "add", target_file_path)
     git(template_root_path, "commit", "-m", "Apply template markers for tests")
     git(template_root_path, "tag", "999.999.999")
 
