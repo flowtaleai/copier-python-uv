@@ -66,21 +66,50 @@ def safe_update_project(project):
 class TestSkipIfExists:
     """Tests for the skip_if_exists behavior of copier."""
 
-    def test_skip_if_exists_preserves_readme_on_update(self, template_copy, tmp_path):
-        project = template_copy.copy(tmp_path)
+    @pytest.mark.parametrize(
+        ("project_file_path", "template_file_path", "custom_answers"),
+        [
+            ("README.md", "template/README.md.jinja", {}),
+            ("CONTRIBUTING.md", "template/CONTRIBUTING.md.jinja", {}),
+            (
+                "src/python_boilerplate/cli.py",
+                (
+                    "template/src/{% if package_type == 'cli' %}"
+                    "{{ package_name | replace('.', _copier_conf.sep) }}"
+                    "{{ _copier_conf.sep }}cli.py{% endif %}.jinja"
+                ),
+                {},
+            ),
+            (
+                "docs/user_guide.md",
+                (
+                    'template/{% if generate_docs != "none" %}docs{% endif %}/'
+                    "{% if generate_example_code %}user_guide.md{% endif %}.jinja"
+                ),
+                {"generate_docs": "mkdocs", "generate_example_code": True},
+            ),
+        ],
+    )
+    def test_skip_if_exists_preserves_file_on_update(
+        self,
+        template_copy,
+        tmp_path,
+        project_file_path,
+        template_file_path,
+        custom_answers,
+    ):
+        project = template_copy.copy(tmp_path, **custom_answers)
         setup_git_repo(project)
 
-        readme_path = project.path / "README.md"
-        user_content = modify_project_file(project, readme_path)
-        copy_template_readme_path = (
-            template_copy.template / "template" / "README.md.jinja"
-        )
-        modify_template_file(template_copy, copy_template_readme_path)
+        target_file = project.path / project_file_path
+        user_content = modify_project_file(project, target_file)
+        template_file = template_copy.template / template_file_path
+        modify_template_file(template_copy, template_file)
         safe_update_project(project)
 
-        assert readme_path.read_text() == user_content
+        assert target_file.read_text() == user_content
 
-    def test_skip_if_exists_updates_license_from_template(
+    def test_skip_if_exists_updates_non_skipped_file_from_template(
         self, template_copy, tmp_path
     ):
         project = template_copy.copy(tmp_path)
