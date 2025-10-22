@@ -6,6 +6,8 @@ _envops:
 _skip_if_exists:
   - README.md
   - CONTRIBUTING.md
+  - "src/*/cli.py"
+  - "docs/user_guide.md"
 
 # ====== QUESTIONS ======
 author_name:
