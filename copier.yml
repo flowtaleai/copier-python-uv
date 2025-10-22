@@ -3,6 +3,11 @@ _envops:
   lstrip_blocks: true
   trim_blocks: true
   keep_trailing_newline: true
+_skip_if_exists:
+  - README.md
+  - CONTRIBUTING.md
+  - "src/*/cli.py"
+  - "docs/user_guide.md"
 
 # ====== QUESTIONS ======
 author_name:

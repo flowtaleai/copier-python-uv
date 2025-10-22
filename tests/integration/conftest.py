@@ -1,5 +1,8 @@
 """Shared helpers for integration tests."""
 
+import subprocess
+from pathlib import Path
+
 from pytest_copier.plugin import CopierProject
 
 
@@ -21,3 +24,7 @@ def setup_precommit_strict(project: CopierProject) -> None:
         std_pre_commit_path.read_text() + strict_pre_commit_path.read_text()
     )
     dst_pre_commit_path.write_text(combined_config)
+
+
+def git(cwd: Path, *args: str) -> None:
+    subprocess.run(["git", *args], cwd=cwd, check=True)
