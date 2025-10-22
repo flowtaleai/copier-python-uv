@@ -10,7 +10,7 @@ from .conftest import git, setup_git_repo
 
 
 @pytest.fixture
-def copy_template_fixture(tmp_path_factory, copier):
+def template_copy(tmp_path_factory, copier):
     original_template_path = Path(copier.template)
     copy_template_path = tmp_path_factory.mktemp("template_root_copy")
     shutil.copytree(original_template_path, copy_template_path, dirs_exist_ok=True)
@@ -64,34 +64,32 @@ def safe_update_project(project):
 class TestSkipIfExists:
     """Tests for the skip_if_exists behavior of copier."""
 
-    def test_skip_if_exists_preserves_readme_on_update(
-        self, copy_template_fixture, tmp_path
-    ):
-        project = copy_template_fixture.copy(tmp_path)
+    def test_skip_if_exists_preserves_readme_on_update(self, template_copy, tmp_path):
+        project = template_copy.copy(tmp_path)
         setup_git_repo(project)
 
         readme_path = project.path / "README.md"
         user_content = modify_project_file(project, readme_path)
         copy_template_readme_path = (
-            copy_template_fixture.template / "template" / "README.md.jinja"
+            template_copy.template / "template" / "README.md.jinja"
         )
-        modify_template_file(copy_template_fixture, copy_template_readme_path)
+        modify_template_file(template_copy, copy_template_readme_path)
         safe_update_project(project)
 
         assert readme_path.read_text() == user_content
 
     def test_skip_if_exists_updates_license_from_template(
-        self, copy_template_fixture, tmp_path
+        self, template_copy, tmp_path
     ):
-        project = copy_template_fixture.copy(tmp_path)
+        project = template_copy.copy(tmp_path)
         setup_git_repo(project)
 
         project_pyproject_path = project.path / "pyproject.toml"
         modify_project_file(project, project_pyproject_path)
         copy_template_license_path = (
-            copy_template_fixture.template / "template" / "pyproject.toml.jinja"
+            template_copy.template / "template" / "pyproject.toml.jinja"
         )
-        marker = modify_template_file(copy_template_fixture, copy_template_license_path)
+        marker = modify_template_file(template_copy, copy_template_license_path)
         safe_update_project(project)
 
         assert marker in project_pyproject_path.read_text()
