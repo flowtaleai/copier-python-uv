@@ -115,6 +115,17 @@ Strict checks:
 2. Run `uv lock` to regenerate the uv lock file given that the `pyproject.toml` may have been updated
 3. Run `uv sync`  to update the project dependencies
 
+#### Files preserved during updates
+
+The following files are never overwritten during template updates to preserve user customizations:
+
+- `README.md` - Project-specific documentation
+- `CONTRIBUTING.md` - Project-specific contribution guidelines
+- `src/*/cli.py` - Custom CLI commands and application logic
+- `docs/user_guide.md` - User-written documentation
+
+All other files will be updated with the latest template changes.
+
 ### Copier parameters
 
 | Name                      | Example                       | Description                                                                                                                            |
