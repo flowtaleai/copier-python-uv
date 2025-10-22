@@ -14,6 +14,10 @@ def template_copy(tmp_path_factory, copier):
     original_template_path = Path(copier.template)
     copy_template_path = tmp_path_factory.mktemp("template_root_copy")
     shutil.copytree(original_template_path, copy_template_path, dirs_exist_ok=True)
+
+    git(copy_template_path, "config", "user.name", "Template User")
+    git(copy_template_path, "config", "user.email", "template@example.com")
+
     return CopierFixture(
         template=copy_template_path,
         defaults=copier.defaults,
@@ -31,8 +35,6 @@ def modify_project_file(project, target_file_path: Path):
 
 def modify_template_file(template_fixture, target_file_path: Path):
     template_root_path = template_fixture.template
-    git(template_root_path, "config", "user.name", "Template User")
-    git(template_root_path, "config", "user.email", "template@example.com")
 
     original = target_file_path.read_text()
     marker = "\n<!-- change marker -->\n"
