@@ -92,6 +92,7 @@ select = [
     {% endif %}
     {% if testing_framework == "pytest" %}
     "PT", # flake8-pytest-style
+    {% endif %}
     {% if use_lint_strict_rules %}
     "T20", # flake8-print
     "ERA", # eradicate
