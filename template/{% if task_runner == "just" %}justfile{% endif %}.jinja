@@ -33,7 +33,7 @@ setup-custom:
     read -p "Include docstring linting in pre-commit hooks? [Y/n]: " include_docstrings
     if [[ "$include_docstrings" =~ ^[Nn]$ ]]; then
         sed 's/ruff check/ruff check --extend-ignore D/' .pre-commit-configs/addon.ruff.yaml >> .pre-commit-config.yaml
-        echo "✓ Docstring linting excluded from pre-commit (still enforced in CI)"
+        echo "✓ Docstring linting excluded from pre-commit (still enforced in {{ task_runner }} lint and CI)"
     else
         cat .pre-commit-configs/addon.ruff.yaml >> .pre-commit-config.yaml
         echo "✓ Docstring linting included in pre-commit"
@@ -44,7 +44,7 @@ setup-custom:
     {% if type_checker == "mypy" %}
     read -p "Include type checking (mypy) in pre-commit hooks? [Y/n]: " include_mypy
     if [[ "$include_mypy" =~ ^[Nn]$ ]]; then
-        echo "✓ Type checking excluded from pre-commit (still enforced in CI)"
+        echo "✓ Type checking excluded from pre-commit (still enforced in {{ task_runner }} lint and CI)"
     else
         cat .pre-commit-configs/addon.mypy.yaml >> .pre-commit-config.yaml
         echo "✓ Type checking included in pre-commit"
