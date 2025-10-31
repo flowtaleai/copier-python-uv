@@ -44,7 +44,7 @@ class TestTypeChecking:
         }
         project = copier.copy(tmp_path, **custom_answers)
         setup_git_repo(project)
-        project.run("just setup-strict")
+        project.run("just setup")
 
         project.run("just lint")
 
