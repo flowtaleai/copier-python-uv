@@ -122,8 +122,8 @@ convention = "google"
 "src/{{ package_name }}/cli.py" = ["T20"]
 {% endif %}
 "__init__.py" = ["F401"]
-{% if enable_docstring_linting %}"**/{tests}/*" = ["D1"]
-{% endif %}"**/{docs,notebooks}/*" = ["T20", "S101", "E402"{{ ', "D"' if enable_docstring_linting else '' }}]
+{% if enable_docstring_linting %}"**/{tests}/*" = ["D1"]{% endif +%}
+"**/{docs,notebooks}/*" = ["T20", "S101", "E402"{{ ', "D"' if enable_docstring_linting else '' }}]
 
 # T20: Forbid the use of print
 # S101: Forbid the use of assert
