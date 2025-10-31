@@ -17,37 +17,37 @@ help: ## Show this help
 
 setup:  ## Setup aligned with CI
 	@uv sync
-	@cp .pre-commit-config.standard.yaml .pre-commit-config.yaml
-	@cat .pre-commit-config.addon.strict.yaml >> .pre-commit-config.yaml
-	@cat .pre-commit-config.addon.ruff.yaml >> .pre-commit-config.yaml
+	@cp .pre-commit-configs/standard.yaml .pre-commit-config.yaml
+	@cat .pre-commit-configs/addon.strict.yaml >> .pre-commit-config.yaml
+	@cat .pre-commit-configs/addon.ruff.yaml >> .pre-commit-config.yaml
 {% if type_checker == "mypy" %}
-	@cat .pre-commit-config.addon.mypy.yaml >> .pre-commit-config.yaml
+	@cat .pre-commit-configs/addon.mypy.yaml >> .pre-commit-config.yaml
 {% endif %}
 	@uv run pre-commit install
 	@echo "✓ Development environment ready (CI-aligned)"
 
 setup-custom:  ## Setup with custom configuration
 	@uv sync
-	@cp .pre-commit-config.standard.yaml .pre-commit-config.yaml
-	@cat .pre-commit-config.addon.strict.yaml >> .pre-commit-config.yaml
+	@cp .pre-commit-configs/standard.yaml .pre-commit-config.yaml
+	@cat .pre-commit-configs/addon.strict.yaml >> .pre-commit-config.yaml
 {% if enable_docstring_linting %}
 	@read -p "Include docstring linting in pre-commit hooks? [Y/n]: " include_docstrings && \
 	if [[ "$$include_docstrings" =~ ^[Nn]$$ ]]; then \
-		sed 's/ruff check/ruff check --extend-ignore D/' .pre-commit-config.addon.ruff.yaml >> .pre-commit-config.yaml; \
+		sed 's/ruff check/ruff check --extend-ignore D/' .pre-commit-configs/addon.ruff.yaml >> .pre-commit-config.yaml; \
 		echo "✓ Docstring linting excluded from pre-commit (still enforced in CI)"; \
 	else \
-		cat .pre-commit-config.addon.ruff.yaml >> .pre-commit-config.yaml; \
+		cat .pre-commit-configs/addon.ruff.yaml >> .pre-commit-config.yaml; \
 		echo "✓ Docstring linting included in pre-commit"; \
 	fi
 {% else %}
-	@cat .pre-commit-config.addon.ruff.yaml >> .pre-commit-config.yaml
+	@cat .pre-commit-configs/addon.ruff.yaml >> .pre-commit-config.yaml
 {% endif %}
 {% if type_checker == "mypy" %}
 	@read -p "Include type checking (mypy) in pre-commit hooks? [Y/n]: " include_mypy && \
 	if [[ "$$include_mypy" =~ ^[Nn]$$ ]]; then \
 		echo "✓ Type checking excluded from pre-commit (still enforced in CI)"; \
 	else \
-		cat .pre-commit-config.addon.mypy.yaml >> .pre-commit-config.yaml; \
+		cat .pre-commit-configs/addon.mypy.yaml >> .pre-commit-config.yaml; \
 		echo "✓ Type checking included in pre-commit"; \
 	fi
 {% endif %}
@@ -56,7 +56,7 @@ setup-custom:  ## Setup with custom configuration
 lint:   ## Runs linting on all project files
 	@tempfile=$$(mktemp) && \
 	trap 'rm -f $$tempfile' EXIT && \
-	cat .pre-commit-config.standard.yaml .pre-commit-config.addon.strict.yaml .pre-commit-config.addon.ruff.yaml{% if type_checker == "mypy" %} .pre-commit-config.addon.mypy.yaml{% endif +%} > $$tempfile && \
+	cat .pre-commit-configs/standard.yaml .pre-commit-configs/addon.strict.yaml .pre-commit-configs/addon.ruff.yaml{% if type_checker == "mypy" %} .pre-commit-configs/addon.mypy.yaml{% endif +%} > $$tempfile && \
 	uv run pre-commit run --all-files -c $$tempfile
 .PHONY: lint
 
