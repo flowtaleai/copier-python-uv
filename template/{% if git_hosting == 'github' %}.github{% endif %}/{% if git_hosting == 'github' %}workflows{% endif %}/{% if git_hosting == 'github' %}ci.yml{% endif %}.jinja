@@ -54,6 +54,6 @@ jobs:
           uv tool install just
           {% endif %}
           {{ task_runner }} setup
-      - name: Lint with pre-commit
+      - name: Lint
         run: |
-          uv run pre-commit run --all-files
+          {{ task_runner }} lint
