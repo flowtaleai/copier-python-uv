@@ -2,7 +2,7 @@
 
 import pytest
 
-from .conftest import setup_git_repo, setup_precommit_strict
+from .conftest import setup_git_repo
 
 
 @pytest.mark.venv
@@ -10,8 +10,7 @@ def test_bake_defaults_and_run_pre_commit(tmp_path, copier):
     custom_answers = {"package_type": "cli"}
     project = copier.copy(tmp_path, **custom_answers)
     setup_git_repo(project)
-    setup_precommit_strict(project)
-    project.run("uv sync")
+    project.run("just setup")
 
     project.run("uv run pre-commit run --all-files")
 
@@ -31,8 +30,7 @@ def test_bake_with_many_and_run_pre_commit(tmp_path, copier):
     }
     project = copier.copy(tmp_path, **custom_answers)
     setup_git_repo(project)
-    setup_precommit_strict(project)
-    project.run("uv sync")
+    project.run("just setup")
 
     project.run("uv run pre-commit run --all-files")
 
@@ -53,8 +51,7 @@ def test_bake_namespaced_package_with_many_and_run_pre_commit(tmp_path, copier):
     }
     project = copier.copy(tmp_path, **custom_answers)
     setup_git_repo(project)
-    setup_precommit_strict(project)
-    project.run("uv sync")
+    project.run("just setup")
 
     project.run("uv run pre-commit run --all-files")
 
@@ -93,7 +90,6 @@ def test_mypy_exclude_respected_in_pre_commit(tmp_path, copier):
         "git commit -m 'Add file with type errors in src directory and update mypy"
         " excludes'"
     )
-    setup_precommit_strict(project)
-    project.run("uv sync")
+    project.run("just setup")
 
     project.run("uv run pre-commit run --all-files")
