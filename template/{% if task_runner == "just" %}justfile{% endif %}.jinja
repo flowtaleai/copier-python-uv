@@ -42,7 +42,13 @@ setup-custom:
     cat .pre-commit-config.addon.ruff.yaml >> .pre-commit-config.yaml
     {% endif %}
     {% if type_checker == "mypy" %}
-    cat .pre-commit-config.addon.mypy.yaml >> .pre-commit-config.yaml
+    read -p "Include type checking (mypy) in pre-commit hooks? [y/N]: " include_mypy
+    if [[ "$include_mypy" =~ ^[Yy]$ ]]; then
+        cat .pre-commit-config.addon.mypy.yaml >> .pre-commit-config.yaml
+        echo "✓ Type checking included in pre-commit"
+    else
+        echo "✓ Type checking excluded from pre-commit (still enforced in CI)"
+    fi
     {% endif %}
     uv run pre-commit install
 
