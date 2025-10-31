@@ -264,7 +264,7 @@ def test_with_hadolint_config_generation(tmp_path, copier):
 
     project = copier.copy(tmp_path, **custom_answers)
 
-    pre_commit_path = project.path / ".pre-commit-configs" / "standard.yaml"
+    pre_commit_path = project.path / ".pre-commit-configs" / "addon.standard.yaml"
     pyproject_path = project.path / "pyproject.toml"
     assert "hadolint" in pre_commit_path.read_text()
     assert "hadolint" in pyproject_path.read_text()
@@ -277,7 +277,7 @@ def test_without_hadolint(tmp_path, copier):
 
     project = copier.copy(tmp_path, **custom_answers)
 
-    pre_commit_path = project.path / ".pre-commit-configs" / "standard.yaml"
+    pre_commit_path = project.path / ".pre-commit-configs" / "addon.standard.yaml"
     pyproject_path = project.path / "pyproject.toml"
     assert "hadolint" not in pre_commit_path.read_text()
     assert "hadolint" not in pyproject_path.read_text()
