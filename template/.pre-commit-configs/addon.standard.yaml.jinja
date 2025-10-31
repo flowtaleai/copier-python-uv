@@ -16,7 +16,7 @@
 
       - id: ruff-lint
         name: Lint files with ruff
-        entry: uv run ruff check{% if not enable_docstring_linting %} --extend-ignore D{% endif +%}
+        entry: uv run ruff check{% if not lint_docstrings %} --extend-ignore D{% endif +%}
         language: system
         require_serial: true
         types_or: [python, pyi, jupyter]

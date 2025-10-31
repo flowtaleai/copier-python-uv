@@ -28,7 +28,7 @@ setup:  ## Setup the development environment
 setup-custom:  ## Setup the development environment with custom configuration
 	@uv sync
 	@cp .pre-commit-configs/base.yaml .pre-commit-config.yaml
-{% if enable_docstring_linting %}
+{% if lint_docstrings %}
 	@read -p "Include docstring linting in pre-commit hooks? [Y/n]: " include_docstrings && \
 	if [[ "$$include_docstrings" =~ ^[Nn]$$ ]]; then \
 		sed 's/ruff check/ruff check --extend-ignore D/' .pre-commit-configs/addon.standard.yaml >> .pre-commit-config.yaml; \
