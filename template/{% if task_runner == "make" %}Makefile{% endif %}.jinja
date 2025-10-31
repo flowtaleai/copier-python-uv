@@ -15,7 +15,7 @@ help: ## Show this help
 	@echo ""
 .PHONY: help
 
-setup:  ## Setup aligned with CI
+setup:  ## Setup the development environment
 	@uv sync
 	@cp .pre-commit-configs/standard.yaml .pre-commit-config.yaml
 	@cat .pre-commit-configs/addon.strict.yaml >> .pre-commit-config.yaml
@@ -26,7 +26,7 @@ setup:  ## Setup aligned with CI
 	@uv run pre-commit install
 	@echo "✓ Development environment ready (CI-aligned)"
 
-setup-custom:  ## Setup with custom configuration
+setup-custom:  ## Setup the development environment with custom configuration
 	@uv sync
 	@cp .pre-commit-configs/standard.yaml .pre-commit-config.yaml
 	@cat .pre-commit-configs/addon.strict.yaml >> .pre-commit-config.yaml

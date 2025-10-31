@@ -12,7 +12,7 @@ bump:
     read -p "Version part [major, minor, patch]: " version_part
     uv run bump-my-version bump $version_part
 
-# Setup with configuration aligned to CI
+# Setup the development environment
 setup:
     uv sync
     cp .pre-commit-configs/standard.yaml .pre-commit-config.yaml
@@ -23,7 +23,7 @@ setup:
     {% endif %}
     uv run pre-commit install
 
-# Setup with custom configuration
+# Setup the development environment with custom configuration
 setup-custom:
     #!/usr/bin/env bash
     uv sync
