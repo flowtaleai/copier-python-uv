@@ -20,7 +20,7 @@ test:
   script:
     - uv run pytest
 
-pre-commit:
+lint:
   stage: linting
   script:
-    - uv run pre-commit run --all-files
+    - {{ task_runner }} lint
