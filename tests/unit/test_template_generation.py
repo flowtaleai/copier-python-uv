@@ -285,8 +285,8 @@ def test_without_hadolint(tmp_path, copier):
 
 def test_bake_with_docstring_linting_enabled(tmp_path, copier):
     custom_answers = {
-        "select_linting_components": True,
-        "enable_docstring_linting": True,
+        "customize_linting_components": True,
+        "lint_docstrings": True,
     }
 
     project = copier.copy(tmp_path, **custom_answers)
@@ -299,8 +299,8 @@ def test_bake_with_docstring_linting_enabled(tmp_path, copier):
 
 def test_bake_with_docstring_linting_disabled(tmp_path, copier):
     custom_answers = {
-        "select_linting_components": True,
-        "enable_docstring_linting": False,
+        "customize_linting_components": True,
+        "lint_docstrings": False,
     }
 
     project = copier.copy(tmp_path, **custom_answers)
@@ -313,7 +313,7 @@ def test_bake_with_docstring_linting_disabled(tmp_path, copier):
 
 def test_bake_without_selecting_linting_components(tmp_path, copier):
     custom_answers = {
-        "select_linting_components": False,
+        "customize_linting_components": False,
     }
 
     project = copier.copy(tmp_path, **custom_answers)
