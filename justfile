@@ -69,13 +69,23 @@ test-template-local MODE='test':
     #!/usr/bin/env bash
     mkdir -p test_templates
     tempdir=$(mktemp -p test_templates -d test_template.XXX)
+    template_copy=$(mktemp -d)
+
+    echo "Creating temporary copy of template with local changes..."
+    # Copy everything except .git to a temp location
+    rsync -av --exclude='.git' --exclude='test_templates' --exclude='__pycache__' --exclude='.venv' . $template_copy/
+
     echo "Installing current local version..."
     if [ "{{MODE}}" = "interactive" ]; then
         echo "Running in interactive mode..."
-        copier copy . $tempdir
+        uv run copier copy --trust $template_copy $tempdir
     else
         echo "Using test answers file..."
-        copier copy --data-file .copier-answers.test.yml . $tempdir
+        uv run copier copy --trust --data-file .copier-answers.test.yml $template_copy $tempdir
     fi
+
+    echo "Cleaning up temporary template copy..."
+    rm -rf $template_copy
+
     echo "Created project in $tempdir"
     echo "To test the project: cd $tempdir && just setup"
