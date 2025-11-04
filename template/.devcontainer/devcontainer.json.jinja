@@ -5,7 +5,7 @@
   "image": "mcr.microsoft.com/devcontainers/python:1-{{ python_version }}-bullseye",
   "features": {
     "ghcr.io/va-h/devcontainers-features/uv:1": {"version": "{{ uv_version }}" },
-    "ghcr.io/devcontainers-extras/features/pre-commit": {},
+    "ghcr.io/devcontainers-extra/features/pre-commit": {},
     "ghcr.io/christophermacgown/devcontainer-features/direnv:1": {},
     {% if generate_dockerfile %}
     "ghcr.io/devcontainers/features/docker-in-docker": { },
