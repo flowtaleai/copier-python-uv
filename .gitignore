@@ -175,6 +175,9 @@ cython_debug/
 # Pre-commit
 .pre-commit-config.yaml
 
+# Local test answers override
+.copier-answers.test.local.yml
+
 # Jinja template files
 *.jinja.swp
 *.jinja~

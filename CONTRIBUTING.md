@@ -77,78 +77,20 @@ For development, use `just test` for quick feedback. Use `just test-integration`
    just test-template interactive main
    ```
 
-   This creates a project in a temporary directory under `testprojects/` using the specified template version.
+   This creates a project in a temporary directory under `test_templates/` using the specified template version.
 
    > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which includes uncommitted changes in your working directory (requires Copier 9.4.0+). Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
+
+   > **Tip:** Create `.copier-answers.test.local.yml` (gitignored) to override the default test answers without modifying the committed file. This is useful for testing specific configurations during development.
 
 #### Verifying Generated Projects
 
 After generating a test project, verify it works correctly:
 
-1. Install dependencies (adjust command based on generated task runner):
-   ```bash
-   cd /tmp/test-project
-
-   # If justfile was generated (default)
-   just setup-strict
-
-   # If Makefile was generated
-   make setup-strict
-   ```
-
-2. Run tests and linting:
-   ```bash
-   # With justfile
-   just test
-   just lint
-
-   # With Makefile
-   make test
-   make lint
-   ```
-
-3. Check other features based on your configuration:
-   ```bash
-   # For projects with documentation
-   just docs        # or: make docs
-   just serve-docs  # or: make serve-docs
-
-   # For CLI projects
-   uv run your-package-name --help
-   ```
-
-#### Using a Default Answers File
-
-The template includes `.copier-answers.test.yml` with fun, cat-themed test values that exercise most template features. You can also create your own answers file for different testing scenarios:
-
-```yaml
-# ~/copier-default-answers.yml
-author_name: "Test Author"
-author_email: "test@example.com"
-package_name: "testpackage"
-distribution_name: "test-package"
-project_name: "Test Project"
-repository_name: "test-project"
-project_short_description: "A project for testing the template"
-version: "0.1.0"
-license: "MIT"
-package_type: "cli"
-python_version: "3.10"
-testing_framework: "pytest"
-max_line_length: 88
-type_checker: "mypy"
-type_checker_strictness: "strict"
-use_lint_strict_rules: true
-ide: "vscode"
-git_hosting: "gitlab"
-use_jupyter_notebooks: true
-generate_example_code: true
-strip_jupyter_outputs: true
-generate_docs: "mkdocs"
-task_runner: just
-```
-
-Adjust these values to match your testing preferences.
+1. Install dependencies: `just setup-strict` (or `make setup-strict`)
+2. Run tests and linting: `just test && just lint`
+3. Check docs if enabled: `just docs` / `just serve-docs`
+4. For CLI projects: `uv run your-package-name --help`
 
 ### Available Commands
 
