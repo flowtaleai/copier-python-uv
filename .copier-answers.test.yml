@@ -1,5 +1,6 @@
 author_email: meow@catcoder.dev
 author_name: Captain Whiskers
+customize_linting_components: false
 distribution_name: purrfect-code
 generate_docs: mkdocs
 generate_dockerfile: false
@@ -8,6 +9,7 @@ git_hosting: github
 ide: vscode
 license: MIT license
 lint_dockerfile: false
+lint_docstrings: true
 max_line_length: 88
 package_name: purrfect_code
 package_type: cli
