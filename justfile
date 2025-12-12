@@ -45,8 +45,9 @@ test-all:
 # Usage:
 #   just test-template              -> uses test answers file (default)
 #   just test-template interactive  -> prompts for all values
+#   just test-template validate     -> uses test answers file + runs setup/lint/test
 #   just test-template REF=main     -> uses test answers file with specific ref
-#   just test-template interactive main -> interactive with specific ref
+#   just test-template validate main -> validate with specific ref
 test-template MODE='test' REF='HEAD':
     #!/usr/bin/env bash
     mkdir -p test_templates
@@ -65,4 +66,13 @@ test-template MODE='test' REF='HEAD':
         fi
     fi
     echo "Created project in $tempdir"
-    echo "To test the project: cd $tempdir && just setup"
+    if [ "{{MODE}}" = "validate" ]; then
+        echo "Validating generated project..."
+        cd $tempdir
+        just setup-strict
+        just lint
+        just test
+        echo "✓ Template validation passed"
+    else
+        echo "To test the project: cd $tempdir && just setup"
+    fi
