@@ -66,4 +66,3 @@ test-template MODE='test' REF='HEAD':
     fi
     echo "Created project in $tempdir"
     echo "To test the project: cd $tempdir && just setup"
-
