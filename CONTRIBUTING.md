@@ -89,6 +89,8 @@ For development, use `just test` for quick feedback. Use `just test-integration`
 
    > **Tip:** Use `just test-template validate` to automatically run setup, lint, and test on the generated project.
 
+   > **Important:** When adding or modifying options in `copier.yml`, update `.copier-answers.test.yml` to include all options. This ensures non-interactive template generation works without prompts.
+
 ### Available Commands
 
 The template project uses `just` as the task runner. To see all available commands:
