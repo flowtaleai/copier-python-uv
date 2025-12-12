@@ -68,9 +68,9 @@ For development, use `just test` for quick feedback. Use `just test-integration`
    just test-template interactive
 
    # Test from specific commit/tag/branch with test answers
-   just test-template test abc1234
-   just test-template test v1.2.3
-   just test-template test feature-branch
+   just test-template REF=abc1234
+   just test-template REF=v1.2.3
+   just test-template REF=feature-branch
 
    # Test from specific ref interactively
    just test-template interactive abc1234
@@ -79,60 +79,7 @@ For development, use `just test` for quick feedback. Use `just test-integration`
 
    This creates a project in a temporary directory under `testprojects/` using the specified template version.
 
-   > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which includes uncommitted changes in your working directory. Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
-
-2. **Basic Manual Generation**:
-   ```bash
-   mkdir -p /tmp/test-project
-   copier copy . /tmp/test-project
-   ```
-
-   > **Important:** When using Copier with a Git repository as the source:
-   >
-   > - Without a reference flag (`-r` or `--vcs-ref`), Copier uses the latest tag
-   > - With `-r HEAD`, it uses the latest commit **including uncommitted changes**
-
-3. **Complete Test with Git Initialization**:
-   ```bash
-   mkdir /tmp/copier-test-project && cd /tmp/copier-test-project && \
-   copier copy /media/data/software/copier-python-uv . -r HEAD \
-   --data-file ~/copier-default-answers.yml && \
-   git init && git add . && git commit -m "initial commit" && just setup-strict && direnv allow
-   ```
-
-#### Testing Different Configurations
-
-When making significant changes, test the template with various configurations:
-
-1. **CLI Project**:
-   ```bash
-   copier copy . /tmp/test-cli --data package_type=cli
-   ```
-
-2. **Library Project**:
-   ```bash
-   copier copy . /tmp/test-lib --data package_type=library
-   ```
-
-3. **Documentation Variations**:
-   ```bash
-   copier copy . /tmp/test-mkdocs --data generate_docs=mkdocs
-   copier copy . /tmp/test-pdoc --data generate_docs=pdoc
-   ```
-
-4. **Task Runner Options**:
-   ```bash
-   # Test with justfile (default)
-   copier copy . /tmp/test-just --data task_runner=just
-
-   # Test with Makefile
-   copier copy . /tmp/test-make --data task_runner=make
-   ```
-
-5. **Automated Testing with Predefined Answers**:
-   ```bash
-   copier copy . /tmp/test-automated -r HEAD --data-file ~/copier-default-answers.yml
-   ```
+   > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which includes uncommitted changes in your working directory (requires Copier 9.4.0+). Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
 
 #### Verifying Generated Projects
 
