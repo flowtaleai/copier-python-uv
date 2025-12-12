@@ -1,0 +1,24 @@
+author_email: meow@catcoder.dev
+author_name: Captain Whiskers
+distribution_name: purrfect-code
+generate_docs: mkdocs
+generate_dockerfile: false
+generate_example_code: true
+git_hosting: github
+ide: vscode
+license: MIT license
+lint_dockerfile: false
+max_line_length: 88
+package_name: purrfect_code
+package_type: cli
+project_name: Purrfect Code
+project_short_description: A cat-approved Python toolkit that helps you write pawsitively amazing code (Nikita The Best would definitely approve)
+python_version: '3.12'
+strip_jupyter_outputs: true
+task_runner: just
+type_checker: mypy
+type_checker_strictness: strict
+use_jupyter_notebooks: true
+use_lint_strict_rules: true
+uv_version: 0.7.13
+version: 0.1.0

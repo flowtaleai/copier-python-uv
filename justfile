@@ -41,9 +41,43 @@ test-all:
     uv run tox -re all
 
 # Test the copier template by creating a new project in temporary directory
-testproject:
+# Note: With --vcs-ref=HEAD (default), copier includes uncommitted changes
+# Usage:
+#   just test-template              -> uses test answers file (default)
+#   just test-template interactive  -> prompts for all values
+#   just test-template validate     -> uses test answers file + runs setup/lint/test
+#   just test-template REF=main     -> uses test answers file with specific ref
+#   just test-template validate main -> validate with specific ref
+test-template MODE='test' REF='HEAD':
     #!/usr/bin/env bash
-    mkdir -p testprojects
-    tempdir=$(mktemp -p testprojects -d testproject.XXX)
-    copier copy --vcs-ref=HEAD . $tempdir
+    mkdir -p /tmp/copier-python-uv-test
+    tempdir=$(mktemp -p /tmp/copier-python-uv-test -d test_template.XXX)
+    echo "Installing from git ref: {{REF}}"
+    if [ "{{MODE}}" = "interactive" ]; then
+        echo "Running in interactive mode..."
+        copier copy --vcs-ref={{REF}} . $tempdir
+    else
+        if [ -f .copier-answers.test.local.yml ]; then
+            echo "Using local test answers file..."
+            copier copy --data-file .copier-answers.test.local.yml --vcs-ref={{REF}} . $tempdir
+        else
+            echo "Using test answers file..."
+            copier copy --data-file .copier-answers.test.yml --vcs-ref={{REF}} . $tempdir
+        fi
+    fi
     echo "Created project in $tempdir"
+    if [ "{{MODE}}" = "validate" ]; then
+        echo "Validating generated project..."
+        cd $tempdir
+        unset VIRTUAL_ENV
+        git init && git add . && git commit -m "initial commit"
+        just setup-strict
+        just lint
+        just test
+        echo "✓ Template validation passed"
+    else
+        cd $tempdir
+        unset VIRTUAL_ENV
+        git init && git add . && git commit -m "initial commit"
+        echo "To test the project: cd $tempdir && just setup"
+    fi

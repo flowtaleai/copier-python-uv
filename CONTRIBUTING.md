@@ -59,147 +59,35 @@ For development, use `just test` for quick feedback. Use `just test-integration`
 
 #### Generating Test Projects
 
-1. **Using just (Quickest Method)**:
+1. **Using just (Recommended Method)**:
    ```bash
-   just testproject
-   ```
-   This creates a project in a temporary directory under `testprojects/` using the current template version.
+   # Test from HEAD commit (default) - uses test answers file
+   just test-template
 
-   > **Note:** The `just testproject` command uses `--vcs-ref=HEAD` which means it will use the committed files in your repository. To test changes, you must commit them first.
+   # Test interactively (prompts for all values)
+   just test-template interactive
 
-2. **Basic Manual Generation**:
-   ```bash
-   mkdir -p /tmp/test-project
-   copier copy . /tmp/test-project
-   ```
+   # Test from specific commit/tag/branch with test answers
+   just test-template REF=abc1234
+   just test-template REF=v1.2.3
+   just test-template REF=feature-branch
 
-   > **Important:** When using Copier with a Git repository as the source, Copier always accesses the repository content through Git, not the filesystem. This means:
-   >
-   > - Without a reference flag (`-r` or `--vcs-ref`), Copier uses the latest tag
-   > - With `-r HEAD`, it uses the latest commit
-   > - Uncommitted changes in your working directory **will not** be included in the template
-   > - To test changes, you must commit them first, then use `-r HEAD`
+   # Test from specific ref interactively
+   just test-template interactive abc1234
+   just test-template interactive main
 
-3. **Complete Test with Git Initialization**:
-   ```bash
-   # First, commit your changes if needed
-   git add .
-   git commit -m "WIP: Testing changes"
-
-   # Then generate a test project
-   mkdir /tmp/copier-test-project && cd /tmp/copier-test-project && \
-   copier copy /media/data/software/copier-python-uv . -r HEAD \
-   --data-file ~/copier-default-answers.yml && \
-   git init && git add . && git commit -m "initial commit" && just setup-strict && direnv allow
+   # Validate: generate + setup + lint + test
+   just test-template validate
+   just test-template validate main
    ```
 
-   After testing, you can undo the temporary commit if needed:
-   ```bash
-   git reset HEAD~1  # Unstage the changes but keep them in your working directory
-   ```
+   This creates a project in `/tmp/copier-python-uv-test/` using the specified template version.
 
-#### Testing Different Configurations
+   > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which includes uncommitted changes in your working directory (requires Copier 9.4.0+). Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
 
-When making significant changes, test the template with various configurations:
+   > **Tip:** Create `.copier-answers.test.local.yml` (gitignored) to override the default test answers without modifying the committed file. This is useful for testing specific configurations during development.
 
-1. **CLI Project**:
-   ```bash
-   copier copy . /tmp/test-cli --data package_type=cli
-   ```
-
-2. **Library Project**:
-   ```bash
-   copier copy . /tmp/test-lib --data package_type=library
-   ```
-
-3. **Documentation Variations**:
-   ```bash
-   copier copy . /tmp/test-mkdocs --data generate_docs=mkdocs
-   copier copy . /tmp/test-pdoc --data generate_docs=pdoc
-   ```
-
-4. **Task Runner Options**:
-   ```bash
-   # Test with justfile (default)
-   copier copy . /tmp/test-just --data task_runner=just
-
-   # Test with Makefile
-   copier copy . /tmp/test-make --data task_runner=make
-   ```
-
-5. **Automated Testing with Predefined Answers**:
-   ```bash
-   copier copy . /tmp/test-automated -r HEAD --data-file ~/copier-default-answers.yml
-   ```
-
-#### Verifying Generated Projects
-
-After generating a test project, verify it works correctly:
-
-1. Install dependencies (adjust command based on generated task runner):
-   ```bash
-   cd /tmp/test-project
-
-   # If justfile was generated (default)
-   just setup-strict
-
-   # If Makefile was generated
-   make setup-strict
-   ```
-
-2. Run tests and linting:
-   ```bash
-   # With justfile
-   just test
-   just lint
-
-   # With Makefile
-   make test
-   make lint
-   ```
-
-3. Check other features based on your configuration:
-   ```bash
-   # For projects with documentation
-   just docs        # or: make docs
-   just serve-docs  # or: make serve-docs
-
-   # For CLI projects
-   uv run your-package-name --help
-   ```
-
-#### Using a Default Answers File
-
-To streamline testing, create a default answers YAML file:
-
-```yaml
-# ~/copier-default-answers.yml
-author_name: "Test Author"
-author_email: "test@example.com"
-package_name: "testpackage"
-distribution_name: "test-package"
-project_name: "Test Project"
-repository_name: "test-project"
-project_short_description: "A project for testing the template"
-version: "0.1.0"
-license: "MIT"
-package_type: "cli"
-python_version: "3.10"
-testing_framework: "pytest"
-max_line_length: 88
-type_checker: "mypy"
-type_checker_strictness: "strict"
-use_lint_strict_rules: true
-ide: "vscode"
-git_hosting: "gitlab"
-use_jupyter_notebooks: true
-generate_example_code: true
-strip_jupyter_outputs: true
-generate_docs: "mkdocs"
-task_runner: just
-```
-
-Adjust these values to match your testing preferences.
+   > **Tip:** Use `just test-template validate` to automatically run setup, lint, and test on the generated project.
 
 ### Available Commands
 
@@ -217,10 +105,10 @@ Key commands include:
 - `just test`: Run unit tests
 - `just test-integration`: Run integration tests
 - `just test-all`: Run all tests
-- `just testproject`: Generate a test project in a temporary directory
+- `just test-template`: Generate a test project in a temporary directory (recommended)
 - `just bump`: Bump the project version
 
-**Note**: If you prefer Make, you can still use `make <command>` by setting `task_runner=make` when generating projects from this template.
+**Note**: The template supports both `just` and `make` as task runners. Use `just test-template` for testing the template, and set `task_runner=make` when generating projects from this template if you prefer Make.
 
 ### Template Structure
 
