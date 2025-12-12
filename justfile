@@ -41,6 +41,7 @@ test-all:
     uv run tox -re all
 
 # Test the copier template by creating a new project in temporary directory
+# Note: With --vcs-ref=HEAD (default), copier includes uncommitted changes
 # Usage:
 #   just test-template              -> uses test answers file (default)
 #   just test-template interactive  -> prompts for all values
@@ -61,31 +62,3 @@ test-template MODE='test' REF='HEAD':
     echo "Created project in $tempdir"
     echo "To test the project: cd $tempdir && just setup"
 
-# Test the copier template using current local version (uncommitted changes)
-# Usage:
-#   just test-template-local              -> uses test answers file (default)
-#   just test-template-local interactive  -> prompts for all values
-test-template-local MODE='test':
-    #!/usr/bin/env bash
-    mkdir -p test_templates
-    tempdir=$(mktemp -p test_templates -d test_template.XXX)
-    template_copy=$(mktemp -d)
-
-    echo "Creating temporary copy of template with local changes..."
-    # Copy everything except .git to a temp location
-    rsync -av --exclude='.git' --exclude='test_templates' --exclude='__pycache__' --exclude='.venv' . $template_copy/
-
-    echo "Installing current local version..."
-    if [ "{{MODE}}" = "interactive" ]; then
-        echo "Running in interactive mode..."
-        uv run copier copy --trust $template_copy $tempdir
-    else
-        echo "Using test answers file..."
-        uv run copier copy --trust --data-file .copier-answers.test.yml $template_copy $tempdir
-    fi
-
-    echo "Cleaning up temporary template copy..."
-    rm -rf $template_copy
-
-    echo "Created project in $tempdir"
-    echo "To test the project: cd $tempdir && just setup"

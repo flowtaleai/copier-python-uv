@@ -75,17 +75,11 @@ For development, use `just test` for quick feedback. Use `just test-integration`
    # Test from specific ref interactively
    just test-template interactive abc1234
    just test-template interactive main
-
-   # Test current local version (uncommitted changes) with test answers
-   just test-template-local
-
-   # Test current local version interactively
-   just test-template-local interactive
    ```
 
    This creates a project in a temporary directory under `testprojects/` using the specified template version.
 
-   > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which means it will use the committed files in your repository. To test uncommitted changes, use `just test-template-local`. By default, both commands use `.copier-answers.test.yml` for quick testing. Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
+   > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which includes uncommitted changes in your working directory. Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
 
 2. **Basic Manual Generation**:
    ```bash
@@ -93,29 +87,17 @@ For development, use `just test` for quick feedback. Use `just test-integration`
    copier copy . /tmp/test-project
    ```
 
-   > **Important:** When using Copier with a Git repository as the source, Copier always accesses the repository content through Git, not the filesystem. This means:
+   > **Important:** When using Copier with a Git repository as the source:
    >
    > - Without a reference flag (`-r` or `--vcs-ref`), Copier uses the latest tag
-   > - With `-r HEAD`, it uses the latest commit
-   > - Uncommitted changes in your working directory **will not** be included in the template
-   > - To test changes, you must commit them first, then use `-r HEAD`
+   > - With `-r HEAD`, it uses the latest commit **including uncommitted changes**
 
 3. **Complete Test with Git Initialization**:
    ```bash
-   # First, commit your changes if needed
-   git add .
-   git commit -m "WIP: Testing changes"
-
-   # Then generate a test project
    mkdir /tmp/copier-test-project && cd /tmp/copier-test-project && \
    copier copy /media/data/software/copier-python-uv . -r HEAD \
    --data-file ~/copier-default-answers.yml && \
    git init && git add . && git commit -m "initial commit" && just setup-strict && direnv allow
-   ```
-
-   After testing, you can undo the temporary commit if needed:
-   ```bash
-   git reset HEAD~1  # Unstage the changes but keep them in your working directory
    ```
 
 #### Testing Different Configurations
