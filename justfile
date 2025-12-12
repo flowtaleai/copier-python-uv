@@ -50,8 +50,8 @@ test-all:
 #   just test-template validate main -> validate with specific ref
 test-template MODE='test' REF='HEAD':
     #!/usr/bin/env bash
-    mkdir -p test_templates
-    tempdir=$(mktemp -p test_templates -d test_template.XXX)
+    mkdir -p /tmp/copier-python-uv-test
+    tempdir=$(mktemp -p /tmp/copier-python-uv-test -d test_template.XXX)
     echo "Installing from git ref: {{REF}}"
     if [ "{{MODE}}" = "interactive" ]; then
         echo "Running in interactive mode..."
@@ -69,10 +69,15 @@ test-template MODE='test' REF='HEAD':
     if [ "{{MODE}}" = "validate" ]; then
         echo "Validating generated project..."
         cd $tempdir
+        unset VIRTUAL_ENV
+        git init && git add . && git commit -m "initial commit"
         just setup-strict
         just lint
         just test
         echo "✓ Template validation passed"
     else
+        cd $tempdir
+        unset VIRTUAL_ENV
+        git init && git add . && git commit -m "initial commit"
         echo "To test the project: cd $tempdir && just setup"
     fi

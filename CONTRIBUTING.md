@@ -75,22 +75,19 @@ For development, use `just test` for quick feedback. Use `just test-integration`
    # Test from specific ref interactively
    just test-template interactive abc1234
    just test-template interactive main
+
+   # Validate: generate + setup + lint + test
+   just test-template validate
+   just test-template validate main
    ```
 
-   This creates a project in a temporary directory under `test_templates/` using the specified template version.
+   This creates a project in `/tmp/copier-python-uv-test/` using the specified template version.
 
    > **Note:** The `just test-template` command uses `--vcs-ref=HEAD` by default, which includes uncommitted changes in your working directory (requires Copier 9.4.0+). Use the `interactive` mode when you need to manually verify all prompts or test specific configurations.
 
    > **Tip:** Create `.copier-answers.test.local.yml` (gitignored) to override the default test answers without modifying the committed file. This is useful for testing specific configurations during development.
 
-#### Verifying Generated Projects
-
-After generating a test project, verify it works correctly:
-
-1. Install dependencies: `just setup-strict` (or `make setup-strict`)
-2. Run tests and linting: `just test && just lint`
-3. Check docs if enabled: `just docs` / `just serve-docs`
-4. For CLI projects: `uv run your-package-name --help`
+   > **Tip:** Use `just test-template validate` to automatically run setup, lint, and test on the generated project.
 
 ### Available Commands
 
