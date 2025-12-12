@@ -86,7 +86,7 @@ Strict checks:
 4. Generate the uv lock file
 
    ```bash
-   make setup-strict
+   make setup
    ```
 
 5. Commit the lock file

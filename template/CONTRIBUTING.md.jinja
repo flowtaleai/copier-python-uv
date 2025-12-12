@@ -21,9 +21,9 @@ Thank you for considering contributing to {{ project_name if project_name else d
    make setup
    ```
 
-   Or for a stricter development environment with additional checks:
+   Or for interactive customization of linting components:
    ```bash
-   make setup-strict
+   make setup-custom
    ```
 
    If you don't have Make available, you can run these commands directly:
@@ -158,7 +158,7 @@ To format and lint your code:
 make lint
 ```
 
-This will run all configured linters and formatters using pre-commit hooks, including both standard and strict rules.
+This will run all configured linters and formatters using pre-commit hooks.
 
 {% if generate_docs != 'none' %}
 ### Documentation
