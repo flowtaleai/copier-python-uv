@@ -56,8 +56,13 @@ test-template MODE='test' REF='HEAD':
         echo "Running in interactive mode..."
         copier copy --vcs-ref={{REF}} . $tempdir
     else
-        echo "Using test answers file..."
-        copier copy --data-file .copier-answers.test.yml --vcs-ref={{REF}} . $tempdir
+        if [ -f .copier-answers.test.local.yml ]; then
+            echo "Using local test answers file..."
+            copier copy --data-file .copier-answers.test.local.yml --vcs-ref={{REF}} . $tempdir
+        else
+            echo "Using test answers file..."
+            copier copy --data-file .copier-answers.test.yml --vcs-ref={{REF}} . $tempdir
+        fi
     fi
     echo "Created project in $tempdir"
     echo "To test the project: cd $tempdir && just setup"
