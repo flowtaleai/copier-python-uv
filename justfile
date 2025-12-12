@@ -44,7 +44,7 @@ test-all:
 # Usage:
 #   just test-template              -> uses test answers file (default)
 #   just test-template interactive  -> prompts for all values
-#   just test-template HEAD         -> uses test answers file with specific ref
+#   just test-template REF=main     -> uses test answers file with specific ref
 #   just test-template interactive main -> interactive with specific ref
 test-template MODE='test' REF='HEAD':
     #!/usr/bin/env bash
