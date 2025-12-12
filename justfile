@@ -71,7 +71,7 @@ test-template MODE='test' REF='HEAD':
         cd $tempdir
         unset VIRTUAL_ENV
         git init && git add . && git commit -m "initial commit"
-        just setup-strict
+        just setup
         just lint
         just test
         echo "✓ Template validation passed"
