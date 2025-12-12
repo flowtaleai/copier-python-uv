@@ -7,7 +7,7 @@ generate_example_code: true
 git_hosting: github
 ide: vscode
 license: MIT license
-lint_dockerfile: true
+lint_dockerfile: false
 max_line_length: 88
 package_name: purrfect_code
 package_type: cli
@@ -16,7 +16,6 @@ project_short_description: A cat-approved Python toolkit that helps you write pa
 python_version: '3.12'
 strip_jupyter_outputs: true
 task_runner: just
-testing_framework: pytest
 type_checker: mypy
 type_checker_strictness: strict
 use_jupyter_notebooks: true
