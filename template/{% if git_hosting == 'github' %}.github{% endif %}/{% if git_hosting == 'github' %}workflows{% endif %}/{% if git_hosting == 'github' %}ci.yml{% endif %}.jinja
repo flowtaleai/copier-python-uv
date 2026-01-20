@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install uv==${UV_VERSION}
           {% if task_runner == "just" %}
-          uv tool install just
+          uv tool install rust-just
           {% endif %}
           {{ task_runner }} setup
       - name: Test with pytest
@@ -51,7 +51,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install uv==${UV_VERSION}
           {% if task_runner == "just" %}
-          uv tool install just
+          uv tool install rust-just
           {% endif %}
           {{ task_runner }} setup
       - name: Lint

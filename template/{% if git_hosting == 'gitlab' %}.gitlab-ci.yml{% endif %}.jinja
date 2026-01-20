@@ -11,7 +11,7 @@ before_script:
   {% endif %}
   - pip install uv=={{ uv_version }}
   {% if task_runner == "just" %}
-  - uv tool install just
+  - uv tool install rust-just
   {% endif %}
   - {{ task_runner }} setup
 
