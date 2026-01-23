@@ -87,8 +87,12 @@ select = [
     "F", # pyflakes, basic flake8
     "N", # pep8-naming, basic flake8
     "A",  # flake8-builtins,
+    {% if lint_docstrings %}
     "D", # pydocstyle
+    {% endif %}
+    {% if testing_framework == "pytest" %}
     "PT", # flake8-pytest-style
+    {% endif %}
     {% if use_lint_strict_rules %}
     "T20", # flake8-print
     "ERA", # eradicate
@@ -98,24 +102,28 @@ select = [
     "I" # isort
 ]
 ignore = [
+    {% if lint_docstrings %}
     # Docstring rules
     "D100",   # Ignore missing docstring in public modules
     "D104",   # Ignore missing docstring in public packages
     "D105",   # Ignore missing docstring in magic methods
+    {% endif %}
     # Bugbear rules
     "B904"   # Ignore exception-raises-generic
 ]
 
+{% if lint_docstrings %}
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+{% endif %}
 
 [tool.ruff.lint.per-file-ignores]
 {% if package_type == "cli" %}
 "src/{{ package_name }}/cli.py" = ["T20"]
 {% endif %}
 "__init__.py" = ["F401"]
-"**/{tests}/*" = ["D1"]
-"**/{docs,notebooks}/*" = ["T20", "S101", "E402", "D"]
+{% if lint_docstrings %}"**/{tests}/*" = ["D1"]{% endif +%}
+"**/{docs,notebooks}/*" = ["T20", "S101", "E402"{{ ', "D"' if lint_docstrings else '' }}]
 
 # T20: Forbid the use of print
 # S101: Forbid the use of assert

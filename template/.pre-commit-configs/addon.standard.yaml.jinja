@@ -1,3 +1,4 @@
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -12,20 +13,17 @@
         entry: uv run black
         require_serial: true
         types_or: [python, pyi]
+
       - id: ruff-lint
         name: Lint files with ruff
-        entry: uv run ruff check
+        entry: uv run ruff check{% if not lint_docstrings %} --extend-ignore D{% endif +%}
         language: system
         require_serial: true
         types_or: [python, pyi, jupyter]
-{% if type_checker == "mypy" %}
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+  {% if lint_dockerfile %}
+
+  - repo: https://github.com/hadolint/hadolint/
+    rev: v2.12.0
     hooks:
-      - id: mypy
-        name: mypy
-        entry: uv run mypy
-        args: ["."]
-        language: system
-        pass_filenames: false
-{% endif %}
+      - id: hadolint
+  {% endif %}

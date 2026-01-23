@@ -20,7 +20,6 @@ def test_bake_with_defaults(tmp_path, copier):
     assert not (project.path / "docs").exists()
 
 
-
 def test_bake_with_proprietary_license(tmp_path, copier):
     custom_answers = {"license": "Proprietary"}
 
@@ -99,7 +98,6 @@ def test_bake_github(tmp_path, copier):
     assert ".gitlab-ci.yml" not in found_toplevel_files
     github_workflow_path = project.path / ".github/workflows/ci.yml"
     assert github_workflow_path.exists()
-
 
 
 def test_bake_with_code_examples(tmp_path, copier):
@@ -266,7 +264,7 @@ def test_with_hadolint_config_generation(tmp_path, copier):
 
     project = copier.copy(tmp_path, **custom_answers)
 
-    pre_commit_path = project.path / ".pre-commit-config.standard.yaml"
+    pre_commit_path = project.path / ".pre-commit-configs" / "addon.standard.yaml"
     pyproject_path = project.path / "pyproject.toml"
     assert "hadolint" in pre_commit_path.read_text()
     assert "hadolint" in pyproject_path.read_text()
@@ -279,7 +277,48 @@ def test_without_hadolint(tmp_path, copier):
 
     project = copier.copy(tmp_path, **custom_answers)
 
-    pre_commit_path = project.path / ".pre-commit-config.standard.yaml"
+    pre_commit_path = project.path / ".pre-commit-configs" / "addon.standard.yaml"
     pyproject_path = project.path / "pyproject.toml"
     assert "hadolint" not in pre_commit_path.read_text()
     assert "hadolint" not in pyproject_path.read_text()
+
+
+def test_bake_with_docstring_linting_enabled(tmp_path, copier):
+    custom_answers = {
+        "customize_linting_components": True,
+        "lint_docstrings": True,
+    }
+
+    project = copier.copy(tmp_path, **custom_answers)
+
+    pyproject_path = project.path / "pyproject.toml"
+    pyproject_content = pyproject_path.read_text()
+    assert '"D"' in pyproject_content
+    assert "[tool.ruff.lint.pydocstyle]" in pyproject_content
+
+
+def test_bake_with_docstring_linting_disabled(tmp_path, copier):
+    custom_answers = {
+        "customize_linting_components": True,
+        "lint_docstrings": False,
+    }
+
+    project = copier.copy(tmp_path, **custom_answers)
+
+    pyproject_path = project.path / "pyproject.toml"
+    pyproject_content = pyproject_path.read_text()
+    assert '"D"' not in pyproject_content
+    assert "[tool.ruff.lint.pydocstyle]" not in pyproject_content
+
+
+def test_bake_without_selecting_linting_components(tmp_path, copier):
+    custom_answers = {
+        "customize_linting_components": False,
+    }
+
+    project = copier.copy(tmp_path, **custom_answers)
+
+    pyproject_path = project.path / "pyproject.toml"
+    pyproject_content = pyproject_path.read_text()
+    assert '"D"' in pyproject_content
+    assert "[tool.ruff.lint.pydocstyle]" in pyproject_content

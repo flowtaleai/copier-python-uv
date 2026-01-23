@@ -20,11 +20,16 @@ jobs:
           python-version: "{{ python_version }}"
       - name: Install Dependencies
         run: |
+          {% if task_runner == "make" %}
           apt-get update || sudo apt-get update
           apt-get install -y make || sudo apt-get install -y make
+          {% endif %}
           python -m pip install --upgrade pip
           pip install uv==${UV_VERSION}
-          make setup-strict
+          {% if task_runner == "just" %}
+          uv tool install rust-just
+          {% endif %}
+          {{ task_runner }} setup
       - name: Test with pytest
         run: |
           uv run pytest
@@ -39,11 +44,16 @@ jobs:
           python-version: "{{ python_version }}"
       - name: Install Dependencies
         run: |
+          {% if task_runner == "make" %}
           apt-get update || sudo apt-get update
           apt-get install -y make || sudo apt-get install -y make
+          {% endif %}
           python -m pip install --upgrade pip
           pip install uv==${UV_VERSION}
-          make setup-strict
-      - name: Lint with pre-commit
+          {% if task_runner == "just" %}
+          uv tool install rust-just
+          {% endif %}
+          {{ task_runner }} setup
+      - name: Lint
         run: |
-          uv run pre-commit run --all-files
+          {{ task_runner }} lint

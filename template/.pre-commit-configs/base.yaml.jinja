@@ -6,6 +6,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-added-large-files
+
   - repo: local
     hooks:
       - id: detect-secrets
@@ -14,14 +15,9 @@ repos:
         language: system
         files: .*
   {% if use_jupyter_notebooks and strip_jupyter_outputs %}
+
   - repo: https://github.com/kynan/nbstripout
     rev: 0.7.1
     hooks:
       - id: nbstripout
-  {% endif %}
-  {% if lint_dockerfile %}
-  - repo: https://github.com/hadolint/hadolint/
-    rev: v2.12.0
-    hooks:
-      - id: hadolint
   {% endif %}
