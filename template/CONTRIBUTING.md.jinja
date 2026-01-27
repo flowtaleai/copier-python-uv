@@ -7,7 +7,7 @@ Thank you for considering contributing to {{ project_name if project_name else d
 ### Requirements
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- Make (optional, for using Makefile commands)
+{% if task_runner == "make" %}- Make (optional, for using Makefile commands){% endif %}{% if task_runner == "just" %}- [just](https://github.com/casey/just) (optional, for using justfile commands){% endif %}
 - Git (for version control)
 - [direnv](https://direnv.net/) (optional, for environment management)
 {% if generate_dockerfile %}
@@ -18,15 +18,15 @@ Thank you for considering contributing to {{ project_name if project_name else d
 
 1. Install dependencies and set up the development environment:
    ```bash
-   make setup
+   {{ task_runner }} setup
    ```
 
    Or for interactive customization of linting components:
    ```bash
-   make setup-custom
+   {{ task_runner }} setup-custom
    ```
 
-   If you don't have Make available, you can run these commands directly:
+   If you don't have {{ task_runner | capitalize }} available, you can run these commands directly:
    ```bash
    uv sync
    uv run pre-commit install
@@ -65,12 +65,12 @@ Note: The pre-commit hooks will automatically strip output from notebooks before
 
 ## Development Workflow
 
-### Available Make Commands
+### Available {{ task_runner | capitalize }} Commands
 
-This project includes a Makefile with various commands to help with development tasks. To see all available commands:
+This project includes a {% if task_runner == "make" %}Makefile{% endif %}{% if task_runner == "just" %}justfile{% endif %} with various commands to help with development tasks. To see all available commands:
 
 ```bash
-make help
+{{ task_runner }}
 ```
 
 This will display a list of all available commands with their descriptions.
@@ -142,10 +142,10 @@ For production deployments:
 To run the test suite:
 
 ```bash
-make test
+{{ task_runner }} test
 ```
 
-Or without Make:
+Or without {{ task_runner | capitalize }}:
 ```bash
 uv run pytest
 ```
@@ -155,7 +155,7 @@ uv run pytest
 To format and lint your code:
 
 ```bash
-make lint
+{{ task_runner }} lint
 ```
 
 This will run all configured linters and formatters using pre-commit hooks.
@@ -166,13 +166,13 @@ This will run all configured linters and formatters using pre-commit hooks.
 To build documentation:
 
 ```bash
-make docs
+{{ task_runner }} docs
 ```
 
 To serve documentation locally for development:
 
 ```bash
-make serve-docs
+{{ task_runner }} serve-docs
 ```
 {% endif %}
 
@@ -228,10 +228,10 @@ This project follows [Semantic Versioning](https://semver.org/) (SemVer).
 To bump the project version:
 
 ```bash
-make bump
-# or specify the version part explicitly
-make bump VERSION_PART=minor
-```
+{{ task_runner }} bump
+{% if task_runner == "make" %}# or specify the version part explicitly
+{{ task_runner }} bump VERSION_PART=minor
+{% endif %}```
 
 Valid VERSION_PART values are: major, minor, or patch.
 
