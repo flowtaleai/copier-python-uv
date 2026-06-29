@@ -17,4 +17,4 @@ test:
 linting:
   stage: test_and_lint
   script:
-    - uv run pre-commit run --all-files
+    - just lint

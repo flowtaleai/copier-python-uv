@@ -3,26 +3,39 @@ _default:
     @just --list
 
 # Bump the project version and create a tag
-bump VERSION_PART:
-    uv run bump-my-version bump {{VERSION_PART}}
+bump:
+    #!/usr/bin/env bash
+    read -p "Version part [major, minor, patch]: " version_part
+    uv run bump-my-version bump $version_part
 
 # Setup the development environment
 setup:
     uv sync
-    cp .pre-commit-config.standard.yaml .pre-commit-config.yaml
+    cp .pre-commit-configs/base.yaml .pre-commit-config.yaml
+    cat .pre-commit-configs/addon.standard.yaml >> .pre-commit-config.yaml
     uv run pre-commit install
 
-# Setup the development environment with strict pre-commit rules
-setup-strict: setup
-    @echo "Appending strict pre-commit rules..."
-    cat .pre-commit-config.addon.strict.yaml >> .pre-commit-config.yaml
+# Setup the development environment with custom configuration
+setup-custom:
+    #!/usr/bin/env bash
+    uv sync
+    cp .pre-commit-configs/base.yaml .pre-commit-config.yaml
+    read -p "Include docstring linting in pre-commit hooks? [Y/n]: " include_docstrings
+    if [[ "$include_docstrings" =~ ^[Nn]$ ]]; then
+        sed 's/ruff check/ruff check --extend-ignore D/' .pre-commit-configs/addon.standard.yaml >> .pre-commit-config.yaml
+        echo "✓ Docstring linting excluded from pre-commit (still enforced in just lint and CI)"
+    else
+        cat .pre-commit-configs/addon.standard.yaml >> .pre-commit-config.yaml
+        echo "✓ Docstring linting included in pre-commit"
+    fi
+    uv run pre-commit install
 
 # Runs linting on all project files
 lint:
     #!/usr/bin/env bash
     tempfile=$(mktemp)
     trap 'rm -f $tempfile' EXIT
-    cat .pre-commit-config.standard.yaml .pre-commit-config.addon.strict.yaml > $tempfile
+    cat .pre-commit-configs/base.yaml .pre-commit-configs/addon.standard.yaml  > $tempfile
     uv run pre-commit run --all-files -c $tempfile
 
 # Shorthand for running unit tests

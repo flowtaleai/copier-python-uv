@@ -102,7 +102,7 @@ just
 Key commands include:
 
 - `just setup`: Set up the development environment
-- `just setup-strict`: Set up the development environment with strict pre-commit rules
+- `just setup-custom`: Set up the development environment with interactive pre-commit customization
 - `just lint`: Run linting on all project files
 - `just test`: Run unit tests
 - `just test-integration`: Run integration tests
