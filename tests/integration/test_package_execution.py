@@ -5,8 +5,7 @@ import pytest
 
 @pytest.mark.venv
 def test_bake_and_run_tests_with_pytest_framework(tmp_path, copier):
-    custom_answers = {"testing_framework": "pytest"}
-    project = copier.copy(tmp_path, **custom_answers)
+    project = copier.copy(tmp_path)
 
     project.run("pytest")
 

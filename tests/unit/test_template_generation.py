@@ -253,7 +253,7 @@ def test_uv_version_consistency(tmp_path, copier, git_hosting):
     contributing_path = project.path / "CONTRIBUTING.md"
     assert "uv" in contributing_path.read_text()
     devcontainer_path = project.path / ".devcontainer" / "devcontainer.json"
-    assert 'uv:1": {"version": "0.7.13" }' in devcontainer_path.read_text()
+    assert 'uv:1": {"version": "0.7.13"}' in devcontainer_path.read_text()
 
 
 def test_with_hadolint_config_generation(tmp_path, copier):
