@@ -141,7 +141,6 @@ All other files will be updated with the latest template changes.
 | license                   | MIT                           | Project license                                                                                                                        |
 | package_type              | cli                           | If `cli` generate cli module with argument parser and  cli entrypoint                                                                  |
 | python_version            | 3.10                          | Define the python version to use for `pyenv` and the CI pipelines                                                                      |
-| testing_framework         | pytest                        | Python testing framework                                                                                                               |
 | max_line_length           | 88                            | Code max line length                                                                                                                   |
 | type_checker              | mypy                          | Select whether to add a type checker                                                                                                   |
 | type_checker_strictness   | strict                        | Decide whether to support gradual typing or not                                                                                        |
