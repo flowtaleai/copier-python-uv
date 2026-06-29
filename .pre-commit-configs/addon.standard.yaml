@@ -1,20 +1,19 @@
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: "template"
       - id: end-of-file-fixer
-        exclude: "template"
 
   - repo: local
     hooks:
       - id: black
         name: Format files with black
-        exclude: "template"
         language: system
         entry: uv run black
         require_serial: true
         types_or: [python, pyi]
+
       - id: ruff-lint
         name: Lint files with ruff
         entry: uv run ruff check

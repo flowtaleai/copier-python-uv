@@ -1,4 +1,4 @@
-make setup
+just setup
 echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
 
 # Add git completions to bash

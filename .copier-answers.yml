@@ -1,7 +1,8 @@
-_commit: 3.0.0
+_commit: 3.1.0
 _src_path: https://github.com/flowtaleai/copier-python-uv
 author_email: mtn@flowtale.ai
 author_name: Flowtale
+customize_linting_components: false
 distribution_name: copier-python-uv
 generate_docs: none
 generate_example_code: false
@@ -15,10 +16,9 @@ package_type: library
 project_name: Copier Python UV
 project_short_description: Opinionated copier template for python projects using uv
 python_version: '3.12'
-testing_framework: pytest
+task_runner: just
 type_checker: none
 use_jupyter_notebooks: false
 use_lint_strict_rules: true
 uv_version: 0.7.13
 version: 3.1.0
-task_runner: just

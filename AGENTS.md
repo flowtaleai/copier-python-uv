@@ -11,7 +11,7 @@ This is a Copier template for generating opinionated Python projects using uv as
 ```bash
 # Setup
 just setup                    # Install deps + standard pre-commit
-just setup-strict             # Setup + strict linting rules
+just setup-custom             # Setup with interactive pre-commit customization
 
 # Testing
 just test                     # Run unit tests (tests/unit/)
